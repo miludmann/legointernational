@@ -15,8 +15,7 @@ public class WallFollower {
 		int dist_01 = 50,
 			dist_02 = 25,
 			dist_03 = 15,
-			distance,
-			dDist;
+			distance;
 		
 		final int forward = 1;
 		final int backward = 2;
