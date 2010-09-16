@@ -23,6 +23,7 @@ public class Tracker
          desiredDistance = 35, // cm
          power, 
          minPower = 60;
+   
      float error, gain = 0.5f;
 	  
      LCD.drawString("Distance: ", 0, 1);
@@ -55,7 +56,7 @@ public class Tracker
          else
              Car.forward(100, 100);
 		 
-         Thread.sleep(300);
+         Thread.sleep(20);
      }
 	 
      Car.stop();
