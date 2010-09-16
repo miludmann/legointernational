@@ -13,6 +13,10 @@ import lejos.nxt.*;
  * 
  * @author  Ole Caprani
  * @version 30.08.07
+ * 
+ * @author Dyhrberg
+ * Modified to use the MultiLogger instead og DataLogger
+ * Added an extra Sensor to compare difference between dB and dB(A)  
  */
 public class SoundSensorTest 
 {
@@ -20,21 +24,16 @@ public class SoundSensorTest
    public static void main(String [] args)  
    throws Exception 
    {
-	   
        SoundSensor ss = new SoundSensor(SensorPort.S1);
        ss.setDBA(false);
        
        SoundSensor ss_a = new SoundSensor(SensorPort.S4);
        ss_a.setDBA(true);
        
-       MultiDataLogger dl = new MultiDataLogger("multilog.txt");
+       MultiLogger dl = new MultiLogger("multilog.txt");
        
-      // DataLogger dl_a = new DataLogger("Sample_dba.txt");
-       
-       LCD.drawString("Decible(db) ", 0, 0);
-       LCD.drawString("Decible(dba) ", 0, 1);
-	   
-       Car.forward(60,60);
+       LCD.drawString("Decible dB   ", 0, 0);
+       LCD.drawString("Decible dB(A)", 0, 1);
        
        while (! Button.ESCAPE.isPressed())
        {
@@ -44,14 +43,12 @@ public class SoundSensorTest
            LCD.drawInt(db,3,13,0);
            LCD.drawInt(dba,3,13,1);
       
-           dl.writeSample( new int[] {db,dba});
-           //dl_a.writeSample(dba);
+           dl.log( new Object[] {db,dba} );
            
            Thread.sleep(20);
        }
        
        dl.close();
-       //dl_a.close();
        
        LCD.clear();
        LCD.drawString("Program stopped", 0, 0);
