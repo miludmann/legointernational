@@ -1,43 +1,34 @@
 package Lesson3;
 
-import java.util.EventListener;
-
-import lejos.nxt.*;
+import lejos.nxt.Button;
+import lejos.nxt.ButtonListener;
+import lejos.nxt.LCD;
+import lejos.nxt.SensorPort;
+import lejos.nxt.SensorPortListener;
 /**
  * The locomotions of a  LEGO 9797 car is controlled by
  * sound detected through a microphone on port 1. 
  * 
  * @author  Ole Caprani
  * @version 23.08.07
+ * 
+ * @author Dyhrberg
+ *  - Rewritten to use an eventbased structure. 
+ *  - Included a simple state like structure.
+ *  
  */
 public class SoundCtrCar
 {
     private static int soundThreshold = 90;
-    private static SoundSensor sound = new SoundSensor(SensorPort.S1);
-
+    
     private static boolean m_running = true;
     private static int m_state = 0;
     private static boolean m_allowNewReaction = true;
-    
-//    private static  void waitForLoudSound() throws Exception
-//    {
-//        int soundLevel;
-//
-//        Thread.sleep(500);
-//        do
-//        {
-//            soundLevel = sound.readValue();
-//            LCD.drawInt(soundLevel,4,10,0); 
-//        }
-//        while ( soundLevel < soundThreshold );
-//    }
 
-    
     public static void main(String [] args) throws Exception
     {
         LCD.drawString("dB level: ",0,0);
         LCD.refresh();
-        
         
         Button.ESCAPE.addButtonListener( new ButtonListener () {
 			@Override
@@ -96,9 +87,6 @@ public class SoundCtrCar
 				}     
 	        }  	
         });
-
-
-
 	   	   
        while (m_running)
        {

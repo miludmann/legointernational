@@ -19,7 +19,7 @@ public class WallFollower {
 		
 		final int forward = 1;
 		final int backward = 2;
-		final int flt = 4;
+		//final int flt = 4;
 		final int power = 80;
 		
 		LCD.drawString("Distance: ", 0, 1);

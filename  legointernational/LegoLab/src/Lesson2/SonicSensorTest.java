@@ -28,7 +28,7 @@ public class SonicSensorTest
        {
            LCD.drawInt(us.getDistance(),3,13,0);
 
-           Thread.sleep(300);
+           Thread.sleep(20); // This is the minimum scan time if we want full sensor range. Due to speed of sound
        }
        LCD.clear();
        LCD.drawString("Program stopped", 0, 0);
