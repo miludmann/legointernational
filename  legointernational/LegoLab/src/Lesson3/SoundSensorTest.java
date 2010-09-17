@@ -15,8 +15,8 @@ import lejos.nxt.*;
  * @version 30.08.07
  * 
  * @author Dyhrberg
- * Modified to use the MultiLogger instead og DataLogger
- * Added an extra Sensor to compare difference between dB and dB(A)  
+ *  - Modified to use the MultiLogger instead og DataLogger
+ *  - Added an extra Sensor to compare difference between dB and dB(A)  
  */
 public class SoundSensorTest 
 {
