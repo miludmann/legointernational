@@ -91,6 +91,10 @@ public class MultiLogger
             for(int i=0; i<m_stringBuilder.length(); i++) {
                 m_fileStream.write((byte) m_stringBuilder.charAt(i));
             }
+            
+            //New line
+            m_fileStream.write('\r');
+            m_fileStream.write('\n');
         }
         catch(IOException e)
         {
