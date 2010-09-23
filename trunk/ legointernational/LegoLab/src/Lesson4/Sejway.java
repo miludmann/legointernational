@@ -8,13 +8,13 @@ import lejos.nxt.*;
 public class Sejway {
 
 	// PID constants
-//	final float KP = 1.556f;
-//	final float KI = 0.222f;
-//	final float KD = 1.833f;
-
-	final float KP = 1.7f;
+	final float KP = 1.556f;
 	final float KI = 0.222f;
-	final float KD = 2.3f;
+	final float KD = 1.833f;
+
+//	final float KP = 1.7f;
+//	final float KI = 0.222f;
+//	final float KD = 2.3f;
 
 	
 	// Global vars:
