@@ -4,6 +4,7 @@ import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.SensorPort;
 import lejos.nxt.SoundSensor;
+import Common.BluetoothLogger;
 import Common.MultiLogger;
 /**
  * A simple sound sensor sampling program
@@ -23,7 +24,10 @@ public class SoundSampling
    public static void main(String [] args) throws Exception
    {
        SoundSensor s = new SoundSensor(SensorPort.S1);
-       MultiLogger logger = new MultiLogger("Sample.txt");
+       
+       //MultiLogger logger = new MultiLogger("Sample.txt");
+       BluetoothLogger logger = new BluetoothLogger();
+       
        int soundLevel;
 	   
        LCD.drawString("Level: ", 0, 0);
