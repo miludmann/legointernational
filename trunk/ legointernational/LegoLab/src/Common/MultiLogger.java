@@ -8,14 +8,14 @@ import lejos.nxt.LCD;
 /**
  * 
  * @author  Anders Dyhrberg
- * @version 1.00.00
+ * @version 1.01.00
  * 
  */
-public class MultiLogger 
+public class MultiLogger extends AbstractLogger 
 {
-    private File m_file;
-    private FileOutputStream m_fileStream;
-    private StringBuilder m_stringBuilder;
+	//File Logging
+	protected File m_file;
+    protected FileOutputStream m_fileStream;
     
     public MultiLogger (String fileName)
     {
@@ -35,57 +35,18 @@ public class MultiLogger
             m_fileStream = new  FileOutputStream(m_file);
             
         }
-        catch(IOException e)
+        catch(IOException x)
         {
-            LCD.drawString(e.getMessage(),0,0);
+            LCD.drawString(x.getMessage(),0,0);
             System.exit(0);
         }
         
         m_stringBuilder = new StringBuilder();
     }
-	
-    public void log( int sample )
-    {
-    	appendLogStart(m_stringBuilder);
-    
-    	m_stringBuilder.append(sample);
-    	
-    	streamToFile(m_stringBuilder);
-    }
-    
-    public void log( Object objs[] )
-    {
-    	appendLogStart(m_stringBuilder);
-    	
-    	for(int i=0; i<objs.length; i++)
-    	{
-    		m_stringBuilder.append(objs[i].toString());
-    		
-    		//Append ',' after each value, except the last one 
-    		if(i<objs.length-1)
-    			m_stringBuilder.append(',');
-    	}
-    	
-    	streamToFile(m_stringBuilder);
-    }
-    
-    public void log( String string )
-    {
-    	appendLogStart(m_stringBuilder);
-    	
-    	m_stringBuilder.append(string);
-
-    	streamToFile(m_stringBuilder);
-    }
-    
-    private void appendLogStart(StringBuilder sb) {
-    	m_stringBuilder.append(System.currentTimeMillis());
-    	m_stringBuilder.append(':');
-    }
         
     //Util function to stream the prepared log strings to the file
-    private void streamToFile(StringBuilder sb)
-    {
+    @Override
+	public void stream(StringBuilder sb) {
     	try
         {
             for(int i=0; i<m_stringBuilder.length(); i++) {
