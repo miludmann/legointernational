@@ -5,6 +5,9 @@ import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
 import lejos.nxt.SensorPort;
 import lejos.nxt.SensorPortListener;
+
+import Common.Car;
+
 /**
  * The locomotions of a  LEGO 9797 car is controlled by
  * sound detected through a microphone on port 1. 

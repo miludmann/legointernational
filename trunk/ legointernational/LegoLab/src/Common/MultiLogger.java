@@ -1,4 +1,4 @@
-package Lesson3;
+package Common;
 
 import java.io.File;
 import java.io.FileOutputStream;

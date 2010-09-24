@@ -1,9 +1,11 @@
 package Lesson4;
 
-import Lesson3.MultiLogger;
-import lejos.nxt.*;
-
-
+import lejos.nxt.Button;
+import lejos.nxt.LCD;
+import lejos.nxt.LightSensor;
+import lejos.nxt.Motor;
+import lejos.nxt.SensorPort;
+import Common.MultiLogger;
 
 public class Sejway {
 

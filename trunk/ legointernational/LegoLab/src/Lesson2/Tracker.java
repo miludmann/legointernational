@@ -1,4 +1,5 @@
 package Lesson2;
+import Common.Car;
 import lejos.nxt.*;
 /**
  * A LEGO 9797 car with a sonar sensor. The sonar is used
