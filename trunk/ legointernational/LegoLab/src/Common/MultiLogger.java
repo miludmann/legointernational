@@ -11,7 +11,7 @@ import lejos.nxt.LCD;
  * @version 1.01.00
  * 
  */
-public class MultiLogger extends AbstractLogger 
+public class MultiLogger extends BaseLogger 
 {
 	//File Logging
 	protected File m_file;
