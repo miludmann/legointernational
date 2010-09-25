@@ -13,7 +13,7 @@ import lejos.nxt.comm.Bluetooth;
  * @version 1.01.00
  * 
  */
-public class BluetoothLogger extends AbstractLogger
+public class BluetoothLogger extends BaseLogger
 {
 	protected BTConnection m_btc = null;
     //protected DataInputStream m_dis = null;

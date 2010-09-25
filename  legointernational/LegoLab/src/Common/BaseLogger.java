@@ -1,7 +1,7 @@
 package Common;
 
-abstract class AbstractLogger {
-
+abstract class BaseLogger implements ILogger
+{
 	protected StringBuilder m_stringBuilder;
 	
 	public void log( int sample )
@@ -38,13 +38,12 @@ abstract class AbstractLogger {
     	stream(m_stringBuilder);
     }
 	    
-    private void appendLogStart(StringBuilder sb) {
+    public void appendLogStart(StringBuilder sb) {
     	m_stringBuilder.append(System.currentTimeMillis());
     	m_stringBuilder.append(':');
     }
     
-	protected abstract void stream(StringBuilder sb);
-	
+	public abstract void stream(StringBuilder sb);
 	public abstract void close();
 	
 }
