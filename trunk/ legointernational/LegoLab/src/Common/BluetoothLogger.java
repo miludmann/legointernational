@@ -1,11 +1,8 @@
 package Common;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import lejos.nxt.LCD;
-import lejos.nxt.comm.BTConnection;
-import lejos.nxt.comm.Bluetooth;
 
 /**
  * 
@@ -15,27 +12,22 @@ import lejos.nxt.comm.Bluetooth;
  */
 public class BluetoothLogger extends BaseLogger
 {
-	protected BTConnection m_btc = null;
-    //protected DataInputStream m_dis = null;
-    protected DataOutputStream m_dos = null;
+	protected BluetoothHandler m_bth = null;
     
 	public BluetoothLogger()
 	{
-		//Blocking call waiting for PC to connect.
-		m_btc = Bluetooth.waitForConnection();
-		m_dos = m_btc.openDataOutputStream();
-		
+		m_bth = BluetoothHandler.getInstance();		
 		m_stringBuilder = new StringBuilder();
 	}
 	
 	@Override
 	public void stream(StringBuilder sb) {
 		try {
-			m_dos.writeBytes(sb.toString());
-			m_dos.writeByte('\r');
-            m_dos.writeByte('\n');
+			m_bth.getOutputStream().writeBytes(sb.toString());
+			m_bth.getOutputStream().writeByte('\r');
+			m_bth.getOutputStream().writeByte('\n');
 			
-            m_dos.flush();
+			m_bth.getOutputStream().flush();
 		}
 		catch (IOException e) {
 			LCD.drawString(e.getMessage(), 0, 0);
@@ -50,8 +42,8 @@ public class BluetoothLogger extends BaseLogger
 	public void close() {
 		 try
         {
-			m_dos.flush();
-			m_dos.close();	
+			m_bth.getOutputStream().flush();
+			m_bth.getOutputStream().close();	
         }
         catch(IOException e)
         {
