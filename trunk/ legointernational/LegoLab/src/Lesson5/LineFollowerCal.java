@@ -26,11 +26,16 @@ public class LineFollowerCal
      final int power = 80;
 	  
      BlackWhiteSensor sensor = new BlackWhiteSensor(SensorPort.S3);
+	 String black = "black";
+	 String white = "white";
+
 	 
      sensor.calibrate();
 	 
      LCD.clear();
      LCD.drawString("Light: ", 0, 2); 
+     LCD.drawString("Color: ", 0, 3); 
+
 	 
      while (! Button.ESCAPE.isPressed())
      {
@@ -39,9 +44,15 @@ public class LineFollowerCal
 	     LCD.refresh();
 	     
 	     if ( sensor.black() )
-	         Car.forward(power, 0);
-	     else
-	         Car.forward(0, power);
+	     {
+	    	// Car.forward(power, 0);
+	     	LCD.drawString(black,1,4);
+	     }
+	     else {
+	         // Car.forward(0, power);
+		     LCD.drawString(white,1,4);
+
+	     }
 	     
 	     Thread.sleep(10);
      }
