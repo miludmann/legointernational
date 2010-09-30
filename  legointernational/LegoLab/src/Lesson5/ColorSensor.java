@@ -14,14 +14,14 @@ import lejos.nxt.*;
  * @author  Ole Caprani
  * @version 23.08.07
  */
-public class BlackWhiteSensor {
+public class ColorSensor {
 
    private LightSensor ls; 
    private int blackLightValue;
    private int whiteLightValue;
    private int blackWhiteThreshold;
 
-   public BlackWhiteSensor(SensorPort p)
+   public ColorSensor(SensorPort p)
    {
 	   ls = new LightSensor(p); 
 	   // Use the light sensor as a reflection sensor
