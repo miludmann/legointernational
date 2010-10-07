@@ -54,8 +54,8 @@ public class TurnHandler {
 			//Skip most of the turn
 		}
 		
-//		if(m_debugMode)
-//			Sound.buzz();
+		if(m_debugMode)
+			Sound.buzz();
 		
 		//keep going until we se a line again..
 		while(SensorPort.S3.readRawValue() < leftSensorLineThreshold && SensorPort.S2.readRawValue() < midSensorLineThreshold && SensorPort.S1.readRawValue() < rightSensorLineThreshold)
@@ -90,8 +90,8 @@ public class TurnHandler {
 				//skip most of the turn
 			}
 			
-//			if(m_debugMode)
-//				Sound.buzz();
+			if(m_debugMode)
+				Sound.buzz();
 			
 			//Now we want to follow the line again.
 			while(SensorPort.S3.readRawValue() < leftSensorLineThreshold && SensorPort.S2.readRawValue() < midSensorLineThreshold && SensorPort.S1.readRawValue() < rightSensorLineThreshold)
@@ -118,8 +118,8 @@ public class TurnHandler {
 				//skip most of the turn
 			}
 			
-//			if(m_debugMode)
-//				Sound.buzz();
+			if(m_debugMode)
+				Sound.buzz();
 			
 			//Now we want to follow the line again.
 			while(SensorPort.S3.readRawValue() < leftSensorLineThreshold && SensorPort.S2.readRawValue() < midSensorLineThreshold && SensorPort.S1.readRawValue() < rightSensorLineThreshold)
