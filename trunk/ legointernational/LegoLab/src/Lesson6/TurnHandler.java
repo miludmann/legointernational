@@ -10,9 +10,9 @@ public class TurnHandler {
 	
 	public static TurnHandler m_instance = new TurnHandler();
 	
-	protected static int m_outerTachoValue = 750; //Enough to skip the center of the plateau 
+	protected static int m_outerTachoValue = 500; //Enough to skip the center of the plateau 
 	protected static int m_OuterPower = 100; //Maximum speed for fastest turn on outer wheel. Longest distance
-	protected static int m_InnerPower = 58; //Measured distance for inner wheel shortest distance.  
+	protected static int m_InnerPower = 53; //Measured distance for inner wheel shortest distance.  
 	
 	protected static RCXLightSensor m_leftLS = new RCXLightSensor(SensorPort.S3);
 	protected static RCXLightSensor m_midLS = new RCXLightSensor(SensorPort.S2);
@@ -54,8 +54,8 @@ public class TurnHandler {
 			//Skip most of the turn
 		}
 		
-		if(m_debugMode)
-			Sound.buzz();
+//		if(m_debugMode)
+//			Sound.buzz();
 		
 		//keep going until we se a line again..
 		while(SensorPort.S3.readRawValue() < leftSensorLineThreshold && SensorPort.S2.readRawValue() < midSensorLineThreshold && SensorPort.S1.readRawValue() < rightSensorLineThreshold)
@@ -83,15 +83,15 @@ public class TurnHandler {
 			m_rightMotor.resetTachoCount();
 			
 			MotorPort.B.controlMotor(m_OuterPower, 1); //Left
-			MotorPort.C.controlMotor(m_InnerPower-5, 1); //Right  //-5 adjusted for mecanicly inconsistency on engines
+			MotorPort.C.controlMotor(m_InnerPower, 1); //Right  //-5 adjusted for mecanicly inconsistency on engines
 			
 			while(m_leftMotor.getTachoCount() < m_outerTachoValue) //measuring the outer wheel tacho for higher resolution
 			{
 				//skip most of the turn
 			}
 			
-			if(m_debugMode)
-				Sound.buzz();
+//			if(m_debugMode)
+//				Sound.buzz();
 			
 			//Now we want to follow the line again.
 			while(SensorPort.S3.readRawValue() < leftSensorLineThreshold && SensorPort.S2.readRawValue() < midSensorLineThreshold && SensorPort.S1.readRawValue() < rightSensorLineThreshold)
@@ -118,8 +118,8 @@ public class TurnHandler {
 				//skip most of the turn
 			}
 			
-			if(m_debugMode)
-				Sound.buzz();
+//			if(m_debugMode)
+//				Sound.buzz();
 			
 			//Now we want to follow the line again.
 			while(SensorPort.S3.readRawValue() < leftSensorLineThreshold && SensorPort.S2.readRawValue() < midSensorLineThreshold && SensorPort.S1.readRawValue() < rightSensorLineThreshold)
