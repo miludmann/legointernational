@@ -83,7 +83,7 @@ public class TurnHandler {
 			m_rightMotor.resetTachoCount();
 			
 			MotorPort.B.controlMotor(m_OuterPower, 1); //Left
-			MotorPort.C.controlMotor(m_InnerPower-3, 1); //Right  //-3 adjusted for mecanicly inconsistency on engines
+			MotorPort.C.controlMotor(m_InnerPower-5, 1); //Right  //-5 adjusted for mecanicly inconsistency on engines
 			
 			while(m_leftMotor.getTachoCount() < m_outerTachoValue) //measuring the outer wheel tacho for higher resolution
 			{
