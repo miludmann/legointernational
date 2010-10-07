@@ -18,16 +18,17 @@ import Common.Car;
  * @author  Ole Caprani
  * @version 23.08.07
  */
-public class LineFollowerCal
+public class LineFollowerColor
 {
-  public static void main (String[] aArg)
-  throws Exception
+  public static void main (String[] aArg) throws InterruptedException
   {
      final int power = 80;
+     int i = 0;
 	  
-     BlackWhiteSensor sensor = new BlackWhiteSensor(SensorPort.S3);
+     ColorBWSensor sensor = new ColorBWSensor(SensorPort.S3);
 	 String black = "black";
 	 String white = "white";
+	 String color = "finish color";
 
 	 
      sensor.calibrate();
@@ -37,24 +38,33 @@ public class LineFollowerCal
      LCD.drawString("Color: ", 0, 3); 
 
 	 
-     while (! Button.ESCAPE.isPressed())
+     while (! Button.ESCAPE.isPressed() || i < 5 )
      {
 
 	     LCD.drawInt(sensor.light(),4,10,2);
 	     LCD.refresh();
 	     
-	     if ( sensor.black() )
-	     {
-	    	Car.forward(power, 0);
-	     	LCD.drawString(black,1,4);
+	     if ( sensor.finishColor() ){
+		     LCD.drawString(color,1,4);
+		     i++;
 	     }
-	     else {
-	         Car.forward(0, power);
-		     LCD.drawString(white,1,4);
+	     else{
+	    	 i = 0;
+	    	 
+		     if ( sensor.black() )
+		     {
+		    	Car.forward(power, 0);
+		     	LCD.drawString(black,1,4);
+		     }
+		     else {
+		         Car.forward(0, power);
+			     LCD.drawString(white,1,4);
+		     } 
+	     }
 
-	     }
 	     
 	     Thread.sleep(10);
+	     
      }
      
      Car.stop();
