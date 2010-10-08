@@ -16,8 +16,8 @@ public class Car
                              backward = 2,
                              stop     = 3;
 	                         
-    private static MotorPort leftMotor = MotorPort.C;
-    private static MotorPort rightMotor= MotorPort.B;
+    private static MotorPort leftMotor = MotorPort.B;
+    private static MotorPort rightMotor= MotorPort.C;
 	
     private Car()
     {	   
