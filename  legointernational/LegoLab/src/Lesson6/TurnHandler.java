@@ -54,8 +54,8 @@ public class TurnHandler {
 			//Skip most of the turn
 		}
 		
-		if(m_debugMode)
-			Sound.buzz();
+		//if(m_debugMode)
+		Sound.buzz();
 		
 		//keep going until we se a line again..
 		while(SensorPort.S3.readRawValue() < leftSensorLineThreshold && SensorPort.S2.readRawValue() < midSensorLineThreshold && SensorPort.S1.readRawValue() < rightSensorLineThreshold)
@@ -90,8 +90,8 @@ public class TurnHandler {
 				//skip most of the turn
 			}
 			
-			if(m_debugMode)
-				Sound.buzz();
+			//if(m_debugMode)
+			Sound.buzz();
 			
 			//Now we want to follow the line again.
 			while(SensorPort.S3.readRawValue() < leftSensorLineThreshold && SensorPort.S2.readRawValue() < midSensorLineThreshold && SensorPort.S1.readRawValue() < rightSensorLineThreshold)
@@ -110,7 +110,7 @@ public class TurnHandler {
 			m_leftMotor.resetTachoCount();
 			m_rightMotor.resetTachoCount();
 			
-			MotorPort.B.controlMotor(m_InnerPower, 1); //Left
+			MotorPort.B.controlMotor(m_InnerPower-3, 1); //Left
 			MotorPort.C.controlMotor(m_OuterPower, 1); //Right
 			
 			while(m_rightMotor.getTachoCount() < m_outerTachoValue) //measuring the outer wheel tacho for higher resolution
@@ -118,8 +118,8 @@ public class TurnHandler {
 				//skip most of the turn
 			}
 			
-			if(m_debugMode)
-				Sound.buzz();
+			//if(m_debugMode)
+			Sound.buzz();
 			
 			//Now we want to follow the line again.
 			while(SensorPort.S3.readRawValue() < leftSensorLineThreshold && SensorPort.S2.readRawValue() < midSensorLineThreshold && SensorPort.S1.readRawValue() < rightSensorLineThreshold)
