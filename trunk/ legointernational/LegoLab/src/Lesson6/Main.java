@@ -1,9 +1,16 @@
 package Lesson6;
 
+import java.util.ArrayList;
+import java.util.Queue;
+
+import Common.BluetoothLogger;
 import Common.Car;
+import Common.ILogger;
+import Lesson6.TurnHandler.Direction;
 import lejos.nxt.*;
 import lejos.nxt.addon.RCXLightSensor;
 import lejos.nxt.addon.TiltSensor;
+import lejos.util.Stopwatch;
 
 /**
  *
@@ -17,13 +24,13 @@ public class Main
 	
     TiltSensor tilt;
 	 
-	private MotorPort ml = MotorPort.B;
-	private MotorPort mr = MotorPort.C;
+	private MotorPort ml = MotorPort.C;
+	private MotorPort mr = MotorPort.B;
 	private RCXLightSensor lsL, lsM, lsR;
 	
 	private int C = 78;
 	private static int EOL_MINOBSCOUNT = 5;
-	private static int SPEEDHIGH = 100;
+	private static int SPEEDHIGH = 80;
 	private static int SPEEDLOW = 60;
 
 	
@@ -47,14 +54,19 @@ public class Main
 	private int lALowThresh;
 	private int lAHighThresh;
 	
+	private ILogger il;
 	private static int NONE = 0;
 	private static int LEFT = -1;
 	private static int RIGHT = 1;
 	
 	private int tiltOffset;
+	
+	private enum state{lookingForInclination, lookingForFlat};	
 		  
 	public Main()
 	{
+		il = new BluetoothLogger();
+
 	    tilt = new TiltSensor(SensorPort.S4);
 
 		  lsL = new RCXLightSensor(pl); 
@@ -79,10 +91,14 @@ public class Main
 	
 	public void setC()
 	{
+		LCD.clear();
+		LCD.drawString("Enter to calibrate", 0, 0);
 		while(!Button.ENTER.isPressed()){}
 		int lLeft = lsL.getNormalizedLightValue();
 		int lRight = lsR.getNormalizedLightValue();
 		C = lRight - lLeft;
+		LCD.clear();
+		LCD.drawString("Constant set !", 0, 0);
 	}
 	
 	public void setTiltOffset()
@@ -131,9 +147,9 @@ public class Main
 	
 	
 	public void trackLineSegment() throws InterruptedException
-	{
-		setTiltOffset();
-		
+	{		
+		state m_state = state.lookingForInclination;
+				
 		int tiltv;
 		int tiltNb = 0;
 		
@@ -150,6 +166,8 @@ public class Main
 		  float timer;
 		  boolean stateChanged = true;
 		  int previousState = NONE;
+		  int aveTilt = 0;
+		  boolean discarded = false;
 		  
 		  LCD.clear();
 		  LCD.drawString("lMLow :", 0, 2);
@@ -157,62 +175,80 @@ public class Main
 		  
 		  timer = System.currentTimeMillis();
 		  
+		  Queue queue = new Queue(); 
+		  
 		  while (!Button.ESCAPE.isPressed()) {
 			  pos = getlinePos();
 			  midVal = getMidVal();
+			  
 			  tiltv = tilt.getXTilt();
-			  
-
-			  
-			  if(Math.abs(tiltv -tiltOffset) >= 6)
+			  if(tiltv <= tiltOffset + 20 && tiltv >= tiltOffset - 20)
 			  {
-				  tiltNb++;
-				  if(tiltNb > 50)
-				  {
-					  Car.stop();
-					  break;
-				  }
+			  	queue.push(tiltv);
+			  	discarded = false;
 			  } else {
-				  tiltNb--;
+				  discarded = true;
 			  }
+			  if(queue.size() >= 15)
+			  {
+				  aveTilt = getAverage(queue);
+				  if(m_state == state.lookingForInclination)
+				  {
+					  if(Math.abs(aveTilt - tiltOffset) >= 6)
+					  {
+						  m_state = state.lookingForFlat;
+						  il.log("**********lookingForFlat**************");
+					  }
+				  } else {
+					  if(Math.abs(aveTilt-tiltOffset) <= 2)
+					  {
+						  Car.stop();
+						  il.log("=============Flat Found>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+						  break;
+					  }
+				  }
+				  queue.pop();
+			  }
+			  
+			  il.log(new Object[]{aveTilt, tiltv, tiltOffset, discarded, pos, previousState, stateChanged});
+	
 			  
 			  LCD.drawInt(lMLowThresh, 10, 2);
 			  LCD.drawInt(midVal, 10, 3);
 			  
-			  if(!stateChanged && Math.abs(System.currentTimeMillis() - timer) >= 500)
-			  {
-				  if(previousState == LEFT)
-				  {
-					  while(Math.abs(pos) > 5)
-					  {
-						  pos = getlinePos();
-						  Car.forward(SPEEDHIGH, SPEEDLOW);
-					  }
-				  } else {
-					  if(previousState == RIGHT)
-					  {
-						  while(Math.abs(pos) > 5)
-						  {
-							  pos = getlinePos();
-							  Car.forward(SPEEDLOW, SPEEDHIGH);
-						  }
-					  } else {
+//			  if(!stateChanged && Math.abs(System.currentTimeMillis() - timer) >= 200)
+//			  {
+//				  if(previousState == LEFT)
+//				  {
+//					  while(Math.abs(pos) > 5)
+//					  {
+//						  pos = getlinePos();
+//						  Car.forward(SPEEDHIGH, SPEEDLOW);
+//					  }
+//				  } else {
+//					  if(previousState == RIGHT)
+//					  {
 //						  while(Math.abs(pos) > 5)
 //						  {
 //							  pos = getlinePos();
-//							  Car.backward(SPEEDHIGH, SPEEDHIGH);
+//							  Car.forward(SPEEDLOW, SPEEDHIGH);
 //						  }
-					  }
-				  }
-				  timer = System.currentTimeMillis();
-			  }
-
+//					  } else {
+////						  while(Math.abs(pos) > 5)
+////						  {
+////							  pos = getlinePos();
+////							  Car.backward(SPEEDHIGH, SPEEDHIGH);
+////						  }
+//					  }
+//				  }
+//				  timer = System.currentTimeMillis();
+//			  }
 			  
 			  if(lMLowThresh != -1 && midVal < lMLowThresh )
 			  {
 				  Car.forward(SPEEDHIGH, SPEEDHIGH);
 			  } else {
-				  if(pos > 5)
+				  if(pos > 3 )
 				  {
 					  // turn right
 					  Car.forward(SPEEDHIGH, SPEEDLOW);
@@ -225,7 +261,7 @@ public class Main
 					  }
 					  previousState = RIGHT;
 				  } else {
-					  if(pos < 5)
+					  if(pos < 3)
 					  {
 						  // turn left
 						  Car.forward(SPEEDLOW, SPEEDHIGH);
@@ -244,8 +280,11 @@ public class Main
 				  }
 			  }
 			  
-		  Thread.sleep(10);
 		  }
+		  
+//		  Car.stop();
+//		  Thread.sleep(1000000);
+
 
 		  // Main task loop
 //		  while (!Button.ESCAPE.isPressed()) {
@@ -308,36 +347,136 @@ public class Main
 
 	}
 	
+	public void followLineTacho(int tachoCount)
+	{
+		int pos;
+		int midVal; 
+		float timer = System.currentTimeMillis();
+		int previousState = NONE;
+		boolean stateChanged = false;
+		
+		Motor ml = new Motor(MotorPort.B);
+		ml.resetTachoCount();
+
+		while (!Button.ESCAPE.isPressed() && ml.getTachoCount() <= tachoCount) {
+			  pos = getlinePos();
+			  midVal = getMidVal();
+			 
+			  il.log(new Object[]{pos, ml.getTachoCount()});
+	
+			  
+			  LCD.drawInt(lMLowThresh, 10, 2);
+			  
+			  if(lMLowThresh != -1 && midVal < lMLowThresh )
+			  {
+				  Car.forward(SPEEDHIGH, SPEEDHIGH);
+			  } else {
+				  if(pos > 3 )
+				  {
+					  // turn right
+					  Car.forward(SPEEDHIGH, SPEEDLOW);
+					  if(previousState != RIGHT)
+					  {
+						  stateChanged = true;
+						  timer = System.currentTimeMillis();
+					  } else {
+						  stateChanged = false;
+					  }
+					  previousState = RIGHT;
+				  } else {
+					  if(pos < 3)
+					  {
+						  // turn left
+						  Car.forward(SPEEDLOW, SPEEDHIGH);
+						  if(previousState != LEFT)
+						  {
+							  stateChanged = true;
+							  timer = System.currentTimeMillis();
+						  } else {
+							  stateChanged = false;
+						  }
+						  previousState = LEFT;
+					  } else {
+						  Car.forward(SPEEDHIGH, SPEEDHIGH);
+						  
+					  }
+				  }
+			  }
+			  
+		  }
+		Car.stop();
+	}
+	
+	private int getAverage(Queue queue) {
+		int sum = 0, i;
+		for(i = 0; i<queue.size(); i++)
+		{
+			sum = sum + (Integer) queue.elementAt(i);
+		}
+		return sum/(i);
+	}
+	
+	private void moveForwardTacho(int tachoCount) {
+		Motor ml = new Motor(MotorPort.B);
+		ml.resetTachoCount();
+		while (!Button.ESCAPE.isPressed() && ml.getTachoCount() <= tachoCount) {
+			Car.forward(SPEEDHIGH, SPEEDHIGH);		
+		}
+		Car.stop();
+	}
+
 	public static void main (String[] aArg)
 	  throws Exception
   	{
+		int lL = 850, lM = 800, lR = 800;
+
 		  Main prg = new Main();
+		  TurnHandler th = TurnHandler.getInstance();
+//		  th.setDebugModeEnabled(true);
+		  
 		  //prg.calibrate();
 		  prg.setC();
+		  
+		  while(!Button.LEFT.isPressed()){}
+		  Thread.sleep(1000);
+		  prg.setTiltOffset();
+		  
+		  Stopwatch stopwatch = new Stopwatch();
+		  
+		  prg.moveForwardTacho(200);
+		  
+		  LCD.clear();
 		  prg.trackLineSegment();
 		  
-		
-	     while (! Button.ESCAPE.isPressed())
-	     {
-	    	 
-	    	 
-//		     LCD.refresh();
-		     
-		     
-		     /*
-		     if ( sensor.black() )
-		     {
-		    	// Car.forward(power, 0);
-		     	LCD.drawString(black,1,4);
-		     }
-		     else {
-		         // Car.forward(0, power);
-			     LCD.drawString(white,1,4);
-		
-		     }
-		     */
-		     Thread.sleep(10);
-	     }
+		  //while(!Button.ENTER.isPressed()){}		  
+		  th.Turn(Direction.RIGHT, lL, lM, lR);
+		  //while(!Button.ENTER.isPressed()){}
+		  prg.trackLineSegment();
+		  //while(!Button.ENTER.isPressed()){}
+		  th.Turn(Direction.LEFT, lL, lM, lR);
+		  //while(!Button.ENTER.isPressed()){}
+		  prg.trackLineSegment();
+		  //while(!Button.ENTER.isPressed()){}
+		  prg.followLineTacho(400);
+		  //while(!Button.ENTER.isPressed()){}
+		  th.Turn180(lL, lM, lR);
+		  //while(!Button.ENTER.isPressed()){}
+		  prg.trackLineSegment();
+		  //while(!Button.ENTER.isPressed()){}
+		  th.Turn(Direction.RIGHT, lL, lM, lR);
+		  //while(!Button.ENTER.isPressed()){}
+		  prg.trackLineSegment();
+		  //while(!Button.ENTER.isPressed()){}
+		  th.Turn(Direction.LEFT, lL, lM, lR);
+		  //while(!Button.ENTER.isPressed()){}
+		  prg.trackLineSegment();
+		  prg.moveForwardTacho(300);
+		  
+		  LCD.clear();
+		  LCD.drawString("Time elapsed :", 0, 1);
+		  LCD.drawInt(stopwatch.elapsed(), 0, 2);
+		  Thread.sleep(100000);
+
 	     
 	     LCD.clear();
 	     LCD.drawString("Program stopped", 0, 0);
