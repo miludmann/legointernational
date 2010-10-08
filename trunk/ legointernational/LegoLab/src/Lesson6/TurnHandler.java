@@ -66,8 +66,8 @@ public class TurnHandler {
 		MotorPort.B.controlMotor(m_OuterPower, 3); //Left stop
 		MotorPort.C.controlMotor(m_OuterPower, 3); //Right stop
 		
-		if(m_debugMode)
-			Sound.beepSequence();
+		//if(m_debugMode)
+		Sound.beepSequence();
 	}
 	
 	public static void Turn(Direction direction, int leftSensorLineThreshold, int midSensorLineThreshold, int rightSensorLineThreshold)
