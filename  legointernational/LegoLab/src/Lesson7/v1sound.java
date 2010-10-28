@@ -74,9 +74,10 @@ public class v1sound
     	   strSnd = Integer.toString(snd);
            //il.log(new Object[]{snd});
     	   //il.log(strSnd);
+    	   snd = 50 + snd/2; 
            Car.forward(snd, snd);
            LCD.drawInt(snd, 2, 2);
-           Thread.sleep(10);
+           Thread.sleep(100);
        }
       
        Car.stop();
