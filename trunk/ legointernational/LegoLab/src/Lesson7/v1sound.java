@@ -34,11 +34,13 @@ public class v1sound
     
     public static ILogger il;
     public static String soundvalue = "Sound value";
+	public static String strSnd;	
+
 
     public static void main(String [] args) throws Exception
     {
-		il = new BluetoothLogger();
-    	
+		//il = new BluetoothLogger();
+		
         LCD.drawString("dB level: ",0,0);
         LCD.refresh();
        
@@ -59,7 +61,7 @@ public class v1sound
                 {   
                     int SoundSensorNormalizedValue = ((1023 - arg2) * 100/ 1023);
                     snd=SoundSensorNormalizedValue;
-                    il.log(snd);
+  
                }    
             }     
         });
@@ -69,8 +71,12 @@ public class v1sound
         
        while (m_running)
        {
+    	   strSnd = Integer.toString(snd);
+           //il.log(new Object[]{snd});
+    	   //il.log(strSnd);
            Car.forward(snd, snd);
            LCD.drawInt(snd, 2, 2);
+           Thread.sleep(10);
        }
       
        Car.stop();
