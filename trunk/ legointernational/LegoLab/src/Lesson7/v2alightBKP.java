@@ -2,7 +2,6 @@ package Lesson7;
 
 import java.util.ArrayList;
 import java.util.Queue;
-import java.util.Stack;
 
 import Common.Car;
 import lejos.nxt.Button;
@@ -27,7 +26,7 @@ import lejos.nxt.addon.RCXLightSensor;
  *  - Included a simple state like structure.
  * 
  */
-public class v2alight
+public class v2alightBKP
 {
     public static String lightValues = "Light values";
     public static String minmax = "MIN/MAX";
@@ -35,16 +34,13 @@ public class v2alight
 	public static int light1, norm1;
 	public static int light2, norm2;
 
-	public static int MIN_LIGHT = 0;
-	public static int MAX_LIGHT = 999;
-	
 
 	public static RCXLightSensor ls1, ls2;
 
-	public static int normalizeValue(int light, int mini, int maxi){
+	public static int normalizeValue(int light, int MIN_LIGHT, int MAX_LIGHT){
 
 		int res;
-		res = (light-mini)*100/(maxi-mini);
+		res = (light-MIN_LIGHT)*100/(MAX_LIGHT-MIN_LIGHT);
 		
 		if ( res > 100 )
 			return 100;
@@ -55,53 +51,23 @@ public class v2alight
 		return res;
 	}
 	
-	public static int adjustQueue(int light1, int light2, Queue qMin, int N){
+	public static int adjust_min(int light1, int light2, int MIN_LIGHT){
 		
-		int tmp = ((light1+light2)/2);
-		
-		if ( N == 0 ){
-			qMin.pop();	
-		}
-		else{
-			N--;
-		}
-		
-		qMin.push(tmp);
-		
-		return N;
-	}
-
-	
-	private static int getMin(Queue queue) {
-		int min = MAX_LIGHT;
-		
-		for( int i = 0; i<queue.size(); i++)
-		{
-			min = Math.min(min, (Integer) queue.elementAt(i));
-		}
-		return min;
+		return Math.min(MIN_LIGHT, Math.min(light1, light2));
 	}
 	
-	private static int getMax(Queue queue) {
-		int max = MIN_LIGHT;
+	public static int adjust_max(int light1, int light2, int MIN_LIGHT){
 		
-		for(int i = 0; i<queue.size(); i++)
-		{
-			max = Math.max(max, (Integer) queue.elementAt(i));
-		}
-		return max;
+		return Math.max(MIN_LIGHT, Math.max(light1, light2));
 	}
+	
+	
 
     public static void main(String [] args) throws Exception
     {
-    	int mini = MIN_LIGHT;
-    	int maxi = MAX_LIGHT;
-    	int N = 100;
     	
-    	Queue q = new Queue();
-
-    	q.push(mini);
-    	q.push(maxi);
+    	int MIN_LIGHT = 999;
+    	int MAX_LIGHT = 0;
  
         ls1 = new RCXLightSensor(SensorPort.S2);
         ls2 = new RCXLightSensor(SensorPort.S3);
@@ -114,14 +80,11 @@ public class v2alight
         	light1 = ls1.getNormalizedLightValue();
         	light2 = ls2.getNormalizedLightValue();
        	
-        	N = adjustQueue(light1, light2, q, N);
-        	
-        	mini = getMin(q);
-        	maxi = getMax(q);
-        	
+        	MIN_LIGHT = adjust_min(light1, light2, MIN_LIGHT);
+        	MAX_LIGHT = adjust_max(light1, light2, MAX_LIGHT);
 
-        	norm1 = normalizeValue(light1, mini, maxi);
-        	norm2 = normalizeValue(light2, mini, maxi);
+        	norm1 = normalizeValue(light1, MIN_LIGHT, MAX_LIGHT);
+        	norm2 = normalizeValue(light2, MIN_LIGHT, MAX_LIGHT);
         	
         	LCD.clear();
 
@@ -132,13 +95,12 @@ public class v2alight
         	
         	LCD.drawString(minmax, 1, 5);
 
-        	LCD.drawInt(mini, 3, 9, 5);
-        	LCD.drawInt(maxi, 3, 13, 5);
+        	LCD.drawInt(MIN_LIGHT, 3, 9, 5);
+        	LCD.drawInt(MAX_LIGHT, 3, 13, 5);
         	
 			Thread.sleep(10);
 
-			if ( N == 0 )
-				Car.forward(norm1, norm2);
+			Car.forward(norm1, norm2);
 
         }
       
