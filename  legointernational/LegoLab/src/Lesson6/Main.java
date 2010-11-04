@@ -31,7 +31,8 @@ public class Main
 	private int C = 78;
 	private static int EOL_MINOBSCOUNT = 5;
 	private static int SPEEDHIGH = 80;
-	private static int SPEEDLOW = 60;
+	private static int SPEEDMEDIUM = 65;
+	private static int SPEEDLOW = 50;
 
 	
 	private static int SPEED_RANGE = 10;
@@ -244,42 +245,28 @@ public class Main
 //				  timer = System.currentTimeMillis();
 //			  }
 			  
-			  if(lMLowThresh != -1 && midVal < lMLowThresh )
-			  {
-				  Car.forward(SPEEDHIGH, SPEEDHIGH);
-			  } else {
-				  if(pos > 3 )
-				  {
-					  // turn right
-					  Car.forward(SPEEDHIGH, SPEEDLOW);
-					  if(previousState != RIGHT)
-					  {
-						  stateChanged = true;
-						  timer = System.currentTimeMillis();
-					  } else {
-						  stateChanged = false;
-					  }
-					  previousState = RIGHT;
-				  } else {
-					  if(pos < 3)
-					  {
-						  // turn left
-						  Car.forward(SPEEDLOW, SPEEDHIGH);
-						  if(previousState != LEFT)
-						  {
-							  stateChanged = true;
-							  timer = System.currentTimeMillis();
-						  } else {
-							  stateChanged = false;
-						  }
-						  previousState = LEFT;
-					  } else {
-						  Car.forward(SPEEDHIGH, SPEEDHIGH);
-						  
-					  }
-				  }
-			  }
+//			  if(lMLowThresh != -1 && midVal < lMLowThresh )
+//			  {
+//				  Car.forward(SPEEDHIGH, SPEEDHIGH);
+//			  } else {
+			
 			  
+			
+			
+			  
+			  
+			  	  if(pos >= 5 ) {
+					  Car.forward(SPEEDHIGH, SPEEDLOW); //fast turn right
+				  } else if(pos < 5 && pos >= 3) {
+					  Car.forward(SPEEDHIGH, SPEEDMEDIUM); //slow turn right
+				  } else if(pos < 3 && pos > -3) {
+					  Car.forward(SPEEDHIGH, SPEEDHIGH);
+				  } else if(pos <= -3 && pos > -5) {
+					  Car.forward(SPEEDMEDIUM, SPEEDHIGH); //slow turn left
+				  } else { // Pos < -4
+					  Car.forward(SPEEDLOW, SPEEDMEDIUM); //
+				  }
+			   					  
 		  }
 		  
 //		  Car.stop();

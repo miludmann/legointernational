@@ -108,7 +108,7 @@ public class TurnHandler {
 			m_leftMotor.resetTachoCount();
 			m_rightMotor.resetTachoCount();
 			
-			MotorPort.B.controlMotor(m_InnerPower+1, 1); //Left
+			MotorPort.B.controlMotor(m_InnerPower, 1); //Left
 			MotorPort.C.controlMotor(m_OuterPower, 1); //Right
 			
 			while(m_rightMotor.getTachoCount() < m_outerTachoValue) //measuring the outer wheel tacho for higher resolution
