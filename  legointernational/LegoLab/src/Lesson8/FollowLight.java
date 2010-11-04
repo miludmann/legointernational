@@ -25,7 +25,7 @@ public class FollowLight extends Behavior
         ls = new RCXLightSensor(sp);
         mport = mp;
     }
-    
+   
 	public static int normalizeValue(int light, int mini, int maxi){
 
 		int res;
@@ -39,60 +39,21 @@ public class FollowLight extends Behavior
 		
 		return res;
 	}
-
-	public static void adjust_min(int light, Queue qMin){
-
-		qMin.pop();
-		qMin.push(light);
-	}
-	
-	public static void adjust_max(int light, Queue qMax){
-	
-		qMax.pop();
-		qMax.push(light);	}
-	
-	private static int getMin(Queue queue) {
-		int min = MAX_LIGHT, i;
-		for(i = 0; i<queue.size(); i++)
-		{
-			min = Math.min(min, (Integer) queue.elementAt(i));
-		}
-		return min;
-	}
-	
-	private static int getMax(Queue queue) {
-		int max = MIN_LIGHT, i;
-		for(i = 0; i<queue.size(); i++)
-		{
-			max = Math.max(max, (Integer) queue.elementAt(i));
-		}
-		return max;
-	}
-   
+    
     public void run() 
     {
-    	
     	min = MIN_LIGHT;
     	max = MAX_LIGHT;
-    	int N = 1000;
-    	
-    	Queue qMin = new Queue();
-    	Queue qMax = new Queue();
-    	
-    	for ( int i = 0; i<N; i++){
-    		qMin.push(max);
-    		qMax.push(min);
-    	}
-    	
+
         while (true)
         {
         	light = ls.getNormalizedLightValue();
         	
-        	adjust_min(light, qMin);
-        	adjust_max(light, qMax);
+        	if ( light > max )
+        		max = light;
         	
-        	min = getMin(qMin);
-        	max = getMax(qMax);
+        	if ( light < min )
+        		min = light;
         	
         	norm = normalizeValue(light, min, max);
 
