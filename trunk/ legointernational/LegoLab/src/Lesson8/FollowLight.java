@@ -40,20 +40,16 @@ public class FollowLight extends Behavior
 		return res;
 	}
 
-	public static void adjust_min(int light1, int light2, Queue qMin){
-		
-		int tmp = Math.min(light1, light2);
-		
+	public static void adjust_min(int light, Queue qMin){
+
 		qMin.pop();
-		qMin.push(tmp);
+		qMin.push(light);
 	}
 	
-	public static void adjust_max(int light1, int light2, Queue qMax){
-		
-		int tmp = Math.max(light1, light2);
-		
+	public static void adjust_max(int light, Queue qMax){
+	
 		qMax.pop();
-		qMax.push(tmp);	}
+		qMax.push(light);	}
 	
 	private static int getMin(Queue queue) {
 		int min = MAX_LIGHT, i;
@@ -84,19 +80,28 @@ public class FollowLight extends Behavior
     	Queue qMax = new Queue();
     	
     	for ( int i = 0; i<N; i++){
-    		qMin.push(maxi);
-    		qMax.push(mini);
+    		qMin.push(max);
+    		qMax.push(min);
     	}
     	
         while (true)
         {
         	light = ls.getNormalizedLightValue();
         	
-        	drawInt(light);
+        	adjust_min(light, qMin);
+        	adjust_max(light, qMax);
+        	
+        	min = getMin(qMin);
+        	max = getMax(qMax);
+        	
+        	norm = normalizeValue(light, min, max);
+
+        	
+        	drawInt(norm);
         	
             suppress();
             
-			mport.controlMotor(light,1);
+			mport.controlMotor(norm,1);
 			delay(500);
 			
             release();		   
