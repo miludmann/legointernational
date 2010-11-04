@@ -14,15 +14,16 @@ public class SoundCar
         LCD.refresh();
     	
     	rd = new RandomDrive("Drive",1, null);
-    	af = new AvoidFront ("Avoid",2,rd);
-    	ps = new PlaySounds ("Play ",3,af);
-    	flLeft = new FollowLight("LightL", 4, ps, SensorPort.S2, MotorPort.B);
-    	flRight = new FollowLight("LightR", 5, ps, SensorPort.S3, MotorPort.A);
+    	flRight = new FollowLight("LightR", 5, rd, SensorPort.S3, MotorPort.C);
+    	flLeft = new FollowLight("LightL", 4, flRight, SensorPort.S2, MotorPort.B);
+    	ps = new PlaySounds ("Play ",3,flLeft);
+    	af = new AvoidFront ("Avoid",2,ps);
+
     	
 
-       	//rd.start();
-       	//af.start();
-    	//ps.start();
+       	rd.start();
+       	af.start();
+    	ps.start();
     	flRight.start();
     	flLeft.start();
 
