@@ -1,5 +1,8 @@
-import lejos.subsumption.*;
-import lejos.nxt.*;
+package Lesson10;
+
+import lejos.nxt.Motor;
+import lejos.robotics.subsumption.Arbitrator;
+import lejos.robotics.subsumption.Behavior;
 
 /**
  * Demonstration of the Behavior subsumption classes.
@@ -11,14 +14,14 @@ import lejos.nxt.*;
  * @author Brian Bagnall and Lawrie Griffiths
  *
  */
-public class BumperCar {
+public class BumperCar_improved {
    public static void main(String [] args) {
       Behavior b1 = new DriveForward_improved();
       Behavior b2 = new PlaySound();
       Behavior b3 = new HitWall();
       Behavior b4 = new Exit();
       Behavior [] bArray = {b1, b2, b3, b4};
-      AltArbitrator arby = new AltArbitrator(bArray);
+      Arbitrator arby = new Arbitrator(bArray);
       Motor.A.setSpeed(200);
       Motor.C.setSpeed(200);
       arby.start();

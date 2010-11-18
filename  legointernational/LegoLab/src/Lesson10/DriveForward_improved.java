@@ -3,7 +3,7 @@ package Lesson10;
 import lejos.nxt.*;
 import lejos.robotics.subsumption.*;
 
-public class DriveForward implements Behavior {
+public class DriveForward_improved implements Behavior {
 
    public boolean takeControl() {
       return true;
