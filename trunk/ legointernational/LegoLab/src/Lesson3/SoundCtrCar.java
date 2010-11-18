@@ -34,12 +34,10 @@ public class SoundCtrCar
         LCD.refresh();
         
         Button.ESCAPE.addButtonListener( new ButtonListener () {
-			@Override
 			public void buttonPressed(Button arg0) {
 				m_running = false;
 			}
 
-			@Override
 			public void buttonReleased(Button arg0) {
 				 //do nothing
 			}     	
@@ -47,7 +45,6 @@ public class SoundCtrCar
         
         SensorPort.S1.addSensorPortListener( new SensorPortListener() {
 
-			@Override
 			public void stateChanged(SensorPort arg0, int arg1, int arg2) {
 				if(SensorPort.S1 == arg0)
 				{	

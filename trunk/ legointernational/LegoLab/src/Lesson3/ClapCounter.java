@@ -46,12 +46,10 @@ public class ClapCounter {
 		//Add Listeners
 		Button.ESCAPE.addButtonListener( new ButtonListener() {
 
-			@Override
 			public void buttonPressed(Button b) {
 				m_running = false;
 			}
 
-			@Override
 			public void buttonReleased(Button b) {
 			}
 		});
@@ -59,7 +57,6 @@ public class ClapCounter {
 		// Resetting the clap counter
 		Button.ENTER.addButtonListener(new ButtonListener() {
 
-			@Override
 			public void buttonPressed(Button b) {
 				try {
 					LCD.clear();
@@ -73,14 +70,12 @@ public class ClapCounter {
 				}
 			}
 
-			@Override
 			public void buttonReleased(Button b) {
 			}
 		});
 
 		SensorPort.S1.addSensorPortListener( new SensorPortListener () {
 
-			@Override
 			public void stateChanged(SensorPort source, int oldValue, int newValue) {
 				
 				int soundSensorNormalizedValue = ((1023 - newValue) * 100/ 1023);
