@@ -1,7 +1,6 @@
 package Lesson10;
 
 import lejos.nxt.Motor;
-import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
 
 /**
@@ -21,7 +20,7 @@ public class BumperCar_improved {
       Behavior b3 = new HitWall();
       Behavior b4 = new ExitImproved();
       Behavior [] bArray = {b1, b2, b3, b4};
-      Arbitrator arby = new Arbitrator(bArray);
+      AltArbitrator arby = new AltArbitrator(bArray);
       Motor.A.setSpeed(200);
       Motor.C.setSpeed(200);
       arby.start();
