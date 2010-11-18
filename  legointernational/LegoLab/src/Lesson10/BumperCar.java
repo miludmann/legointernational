@@ -1,5 +1,9 @@
 package Lesson10;
 
+import Common.BluetoothLogger;
+import Common.ILogger;
+import Common.MultiLogger;
+import Lesson2.SonicSensorTest;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.Motor;
@@ -76,42 +80,44 @@ class DriveForward implements Behavior
 class DetectWall implements Behavior
 {
 	private boolean _suppressed = false;
-
-  public DetectWall()
-  {
-    touch = new TouchSensor(SensorPort.S1);
-    sonar = new UltrasonicSensor(SensorPort.S3);
-  }
-
-  public boolean takeControl()
-  {
-    sonar.ping();
-    
-    Sound.pause(2000);
-    
-    return touch.isPressed() || sonar.getDistance() < 25;
-  }
-
-  public void suppress()
-  {
-	 _suppressed = true;// standard practice for suppress methods
-  }
-
-  public void action()
-  {
-    Motor.C.resetTachoCount();
-    _suppressed = false;
-    Motor.A.rotate(-180, true);// start Motor.A rotating backward
-    Motor.C.backward();  // rotate C farther to make the turn
-    while (!_suppressed && Motor.C.getTachoCount() > -360)
-    {
-      Thread.yield(); //don't exit till suppressed
-    }
-    Motor.C.stop();
-  }
-  
-  private TouchSensor touch;
-  private UltrasonicSensor sonar;
+	protected ObstacleFinder m_obstacleFinder;
+	
+	  public DetectWall()
+	  {
+	    touch = new TouchSensor(SensorPort.S1);
+	    sonar = new UltrasonicSensor(SensorPort.S3);
+	    	    
+	    m_obstacleFinder = new ObstacleFinder(sonar);
+	    m_obstacleFinder.setDaemon(true);
+	    m_obstacleFinder.start();
+	  }
+	
+	  public boolean takeControl()
+	  {
+	    sonar.ping();   
+	    return touch.isPressed() || m_obstacleFinder.obstacleVisibel();
+	  }
+	
+	  public void suppress()
+	  {
+		 _suppressed = true;// standard practice for suppress methods
+	  }
+	
+	  public void action()
+	  {
+	    Motor.C.resetTachoCount();
+	    _suppressed = false;
+	    Motor.A.rotate(-180, true);// start Motor.A rotating backward
+	    Motor.C.backward();  // rotate C farther to make the turn
+	    while (!_suppressed && Motor.C.getTachoCount() > -360)
+	    {
+	      Thread.yield(); //don't exit till suppressed
+	    }
+	    Motor.C.stop();
+	  }
+	  
+	  private TouchSensor touch;
+	  private UltrasonicSensor sonar;
 }
 
 class Exit implements Behavior
@@ -138,6 +144,64 @@ class Exit implements Behavior
 		return Button.ESCAPE.isPressed();
 }
   
+}
+
+class ObstacleFinder extends Thread
+{
+	protected ILogger m_logger;
+	protected UltrasonicSensor m_sensor;
+	
+	protected final int CONST_FILTER_LENGTH = 5;
+	protected final double CONST_OBSTACLE_DISTANCE = 25;
+	
+	protected int[] m_latestValues;
+	protected int m_valueIX = 0;
+	
+	double m_accumulator = 0;
+	
+	public ObstacleFinder(UltrasonicSensor sensor)
+	{
+		m_sensor = sensor;
+		m_logger = new BluetoothLogger();
+		
+		m_latestValues = new int[CONST_FILTER_LENGTH];
+		for(int i=0; i<CONST_FILTER_LENGTH; i++)
+			m_latestValues[i] = 255;
+	}
+	
+	public void run() {
+       while(true)
+       {
+    	   m_sensor.ping();
+    	   m_latestValues[m_valueIX] = m_sensor.getDistance();
+    	   
+    	   m_valueIX++;
+    	   
+    	   if(m_valueIX > CONST_FILTER_LENGTH-1)
+    		   m_valueIX = 0;
+    	   
+    	   Sound.pause(50); //Scanning 20 sec.
+       }
+    }
+
+	protected double getAvarage()
+	{
+		m_accumulator = 0;
+		for(int i=0; i<m_latestValues.length; i++)
+		{
+			m_accumulator+=m_latestValues[i];
+		}
+		
+		m_accumulator = m_accumulator/CONST_FILTER_LENGTH;
+		m_logger.log("AVARAGE: " + m_accumulator);
+				
+		return m_accumulator;	
+	}
+		
+	public boolean obstacleVisibel()
+	{
+		return (getAvarage() < CONST_OBSTACLE_DISTANCE);
+	}	
 }
 
 
