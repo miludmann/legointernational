@@ -19,7 +19,7 @@ public class BumperCar_improved {
       Behavior b1 = new DriveForward_improved();
       Behavior b2 = new PlaySound();
       Behavior b3 = new HitWall();
-      Behavior b4 = new Exit();
+      Behavior b4 = new ExitImproved();
       Behavior [] bArray = {b1, b2, b3, b4};
       Arbitrator arby = new Arbitrator(bArray);
       Motor.A.setSpeed(200);
