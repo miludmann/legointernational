@@ -62,12 +62,12 @@ public class FollowLight extends Behavior
         	
         	if ( light2 < min )
         		min = light2;
-        	
+
 
         	norm1 = normalizeValue(light1, min, max);
         	norm2 = normalizeValue(light2, min, max);
-        	
-        	
+
+
         	drawInt((norm1+norm2)/2);
         	
         	

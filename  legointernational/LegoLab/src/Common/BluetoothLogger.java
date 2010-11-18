@@ -20,7 +20,7 @@ public class BluetoothLogger extends BaseLogger
 		m_stringBuilder = new StringBuilder();
 	}
 	
-	@Override
+	
 	public void stream(StringBuilder sb) {
 		try {
 			m_bth.getOutputStream().writeBytes(sb.toString());
@@ -38,7 +38,7 @@ public class BluetoothLogger extends BaseLogger
         m_stringBuilder.delete(0, m_stringBuilder.length()-1);
 	}
 	
-	@Override
+
 	public void close() {
 		 try
         {
