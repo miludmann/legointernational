@@ -86,7 +86,9 @@ class DetectWall implements Behavior
   public boolean takeControl()
   {
     sonar.ping();
-    Sound.pause(20);
+    
+    Sound.pause(2000);
+    
     return touch.isPressed() || sonar.getDistance() < 25;
   }
 
@@ -132,7 +134,7 @@ class Exit implements Behavior
 	}
 	
 	public boolean takeControl() {
-	    Sound.pause(20);
+//	    Sound.pause(20);
 		return Button.ESCAPE.isPressed();
 }
   
