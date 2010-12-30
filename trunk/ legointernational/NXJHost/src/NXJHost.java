@@ -44,15 +44,15 @@ public class NXJHost
 	protected DataInputStream m_dis = null;
 	protected DataOutputStream m_dos = null;
 	
-	public static void main(String args[]) {
-		try	{
-			NXJHost m_instance = new NXJHost();
-			m_instance.run(args);
-		} catch (Throwable t) {
-			System.err.println("Error: " + t.getMessage());
-			System.exit(1);
-		}
-	}
+//	public static void main(String args[]) {
+//		try	{
+//			NXJHost m_instance = new NXJHost();
+//			m_instance.run(args);
+//		} catch (Throwable t) {
+//			System.err.println("Error: " + t.getMessage());
+//			System.exit(1);
+//		}
+//	}
 	
 	public NXJHost()
 	{
