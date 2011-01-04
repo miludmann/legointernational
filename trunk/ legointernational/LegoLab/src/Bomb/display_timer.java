@@ -1,6 +1,12 @@
 package Bomb;
 
+import lejos.nxt.*;
 import lejos.nxt.LCD;
+import javax.microedition.lcdui.Graphics;
+import java.lang.Object;
+
+
+
 
 public class display_timer {
 
@@ -11,16 +17,19 @@ public class display_timer {
 //		//65, 84
 //	}
 	
-	 public void run(){
-		    
+	 public static void main(String [] options) throws Exception{
+		 Graphics g = new Graphics();
+		 g.drawLine(5, 5, 60, 60);
+		 g.drawRect(62, 10, 25, 35);
+		 Thread.sleep(2000);
 		 //LCD.bitBlt(data, 65, 84, 0, 0, 65, 84, 65, 84, 0);
-		 LCD.drawString("Hello World", 20, 20);
-		 try {
-			Thread.sleep(100000);
-		
-		 } catch (InterruptedException e) {
-			
-		}
+//		 LCD.drawString("Hello World", 20, 20);
+//		 try {
+//			Thread.sleep(100000);
+//		
+//		 } catch (InterruptedException e) {
+//			
+//		}
 	 }
 		
 }
