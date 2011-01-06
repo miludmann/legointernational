@@ -46,7 +46,7 @@ public class LIMessage {
 	}
 }
 
-enum MessageType
+enum LIMessageType
 {
 	Command,
 	Debug
