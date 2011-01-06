@@ -1,3 +1,4 @@
+package MessageFramework;
 public class Message{
 	
 	private static byte STX = 2;
