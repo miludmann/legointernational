@@ -1,4 +1,4 @@
-package Common;
+package Networking;
 public class LIMessage {
 	
 	public static byte STX = 2;

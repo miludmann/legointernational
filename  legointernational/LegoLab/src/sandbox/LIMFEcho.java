@@ -5,9 +5,9 @@ import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
 import lejos.nxt.SensorPort;
 import lejos.nxt.SoundSensor;
-import Common.BluetoothCommander;
-import Common.LIMessage;
-import Common.LIMessageType;
+import Networking.BluetoothCommander;
+import Networking.LIMessage;
+import Networking.LIMessageType;
 
 /**
  * A test program to test the bluetooth commander 

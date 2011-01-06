@@ -4,7 +4,7 @@ import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.SensorPort;
 import lejos.nxt.SoundSensor;
-import Common.MultiLogger;
+import Logger.MultiLogger;
 /**
  * A simple sonar sensor test program.
  * 

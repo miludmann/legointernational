@@ -1,4 +1,4 @@
-package Common;
+package Networking;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

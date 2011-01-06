@@ -2,7 +2,6 @@ package Lesson5;
 
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
-import lejos.nxt.Motor;
 import lejos.nxt.MotorPort;
 import lejos.nxt.SensorPort;
 import Common.Car;

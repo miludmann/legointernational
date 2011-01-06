@@ -5,7 +5,7 @@ import lejos.nxt.LCD;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
-import Common.MultiLogger;
+import Logger.MultiLogger;
 
 public class Sejway {
 

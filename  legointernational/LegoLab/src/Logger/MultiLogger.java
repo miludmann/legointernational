@@ -1,4 +1,4 @@
-package Common;
+package Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;

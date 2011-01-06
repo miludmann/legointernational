@@ -1,35 +1,38 @@
 package Lesson6;
 
-import java.util.ArrayList;
-
-import Common.Car;
-
-import lejos.nxt.*;
+import lejos.nxt.LCD;
+import lejos.nxt.Motor;
+import lejos.nxt.MotorPort;
+import lejos.nxt.SensorPort;
 import lejos.nxt.addon.RCXLightSensor;
 
 public class Calibration {
 	
-	private int forward = 1, backward = 2, stop = 3, fl = 4;
+	//private int forward = 1, backward = 2, stop = 3, fl = 4;
 	private RCXLightSensor lsL; 
 	private RCXLightSensor lsM; 
 	private RCXLightSensor lsR; 
 	private Motor LEFT;
 	private Motor RIGHT;
 	private int lRMin, lRMax, lMMin, lMMax, lLMin, lLMax, lLCross, lRCross;
-	private ArrayList<Integer> resultCal;
+	//private ArrayList<Integer> resultCal;
 	private int iSLMC;
 	protected static int POWER_SCAN = 60;
 	// Parameters for sensors
 	int ldRange;
 	int ldMid;
 	// Thresholds
+	@SuppressWarnings("unused")
 	private int lLCrossThresh;
+	@SuppressWarnings("unused")
 	private int lRCrossThresh;
-	private int lsEOLThresh;
+	//private int lsEOLThresh;
 	private int lLLowThresh;
+	@SuppressWarnings("unused")
 	private int lRLowThresh;
 	private int lMLowThresh;
 	private int lLHighThresh;
+	@SuppressWarnings("unused")
 	private int lRHighThresh;
 	private int lMHighThresh;
 	private int lALowThresh;
