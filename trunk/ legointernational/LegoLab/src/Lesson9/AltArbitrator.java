@@ -1,7 +1,7 @@
 import lejos.subsumption.*;
 
 public class AltArbitrator {
-   
+
    private Behavior [] behavior;
    private final int NONE = 99;
    //private int currentBehavior;
