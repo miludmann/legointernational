@@ -1,3 +1,5 @@
+package MessageFramework;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -16,6 +18,10 @@ import javax.swing.JTextArea;
 
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
+
+import MessageFramework.Message;
+
+
 
 public class MessageFrameworkTester implements MessageListenerInterface
 {
