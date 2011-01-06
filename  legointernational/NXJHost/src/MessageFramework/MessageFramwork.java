@@ -32,6 +32,7 @@ public class MessageFramwork {
 		//instance here
 		m_reader = new Reader(); 
     	m_reader.setDaemon(true);
+    	m_reader.start(); //Start to listen for incomming messages
 	}
 	
 	public static synchronized MessageFramwork getInstance() {
@@ -56,7 +57,7 @@ public class MessageFramwork {
         return m_connected;
 	}
 	
-	public void SendMessage(Message msg)
+	public void SendMessage(LIMessage msg)
 	{
 		try  // handshake
         {
@@ -95,7 +96,7 @@ public class MessageFramwork {
                         	for(int i=0; i<m_messageListeners.size(); i++)
                         	{
                         		synchronized (m_guard) {
-                        			m_messageListeners.get(i).recievedNewMessage(new Message(MessageType.Command, "TEST MESSAGE"));
+                        			m_messageListeners.get(i).recievedNewMessage(new LIMessage(MessageType.Command, "TEST MESSAGE"));
                         		}
                         	}
                         }
