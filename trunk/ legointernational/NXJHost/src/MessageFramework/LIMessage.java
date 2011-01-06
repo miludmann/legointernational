@@ -1,5 +1,5 @@
 package MessageFramework;
-public class Message{
+public class LIMessage {
 	
 	private static byte STX = 2;
 	private static byte ETX = 3;
@@ -7,9 +7,13 @@ public class Message{
 	protected MessageType m_msgType; 
 	protected String m_payload;
 	
-	public Message(MessageType msgType, String payload){
+	public LIMessage(MessageType msgType, String payload){
 		m_msgType = msgType;
 		m_payload = payload;
+	}
+	
+	public LIMessage(){
+		
 	}
 	
 	//MSG Example: <STX>0:somepayload<ETX>
@@ -31,7 +35,7 @@ public class Message{
 		return result;		
 	}
 	
-	public static Message setEncodedMsg(byte[] msg) {
+	public static LIMessage setEncodedMsg(byte[] msg) {
 		
 		MessageType msgType = (msg[1]==0?MessageType.Command:MessageType.Debug);  //  MessageType.values()[msg[0]];  // MessageType.class.getEnumConstants()[msg[0]]; //Need better solution.
 		byte[] payloadBytesOnly = new byte[msg.length-4]; //4 since this is <STX>, MegType, :, and ETX, that we remove
@@ -42,7 +46,7 @@ public class Message{
 		
 		String payload = new String(payloadBytesOnly);
 		
-		return new Message(msgType, payload);
+		return new LIMessage(msgType, payload);
 	}
 }
 

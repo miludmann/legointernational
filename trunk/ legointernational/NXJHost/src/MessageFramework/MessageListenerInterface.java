@@ -1,5 +1,5 @@
 package MessageFramework;
 
 public interface MessageListenerInterface {
-	void recievedNewMessage(Message msg);   // Will be called when there is a new message ready
+	void recievedNewMessage(LIMessage msg);   // Will be called when there is a new message ready
 }
