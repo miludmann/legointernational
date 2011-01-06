@@ -1,3 +1,4 @@
+package StreamComponent;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -24,7 +25,7 @@ import lejos.pc.comm.NXTInfo;
 
 public class ImageStreamTester {
 
-	public static final String IP = "192.168.0.139:8000"; // <<<<< Set IP and port from application here.
+	public static final String IP = "10.0.0.106:8000"; // <<<<< Set IP and port from application here.
 	
 	protected ImageStreamTester m_instance;
 	private JFrame m_frame;

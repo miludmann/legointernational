@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -7,9 +6,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,19 +14,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import lejos.pc.comm.NXTComm;
-import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 
-public class NXJHost
+public class MessageFrameworkTester implements MessageListenerInterface
 {
-	NXJHost m_instance;
+	MessageFrameworkTester m_instance;
 	
 	private JFrame m_frame;
-
-	private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-	private Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 	
 	protected final JPanel buttonPanel = new JPanel(); 
 	protected final JButton connectButton = new JButton("Connect");
@@ -40,27 +31,32 @@ public class NXJHost
 	protected static String title = "NXJHost";
 	protected boolean m_btOpen = false;
 	
-	protected NXTInfo m_info = new NXTInfo(NXTCommFactory.BLUETOOTH, "chacal", "001653006046");  //School "00165309782B"
-	protected DataInputStream m_dis = null;
-	protected DataOutputStream m_dos = null;
+	protected NXTInfo m_info = new NXTInfo(NXTCommFactory.BLUETOOTH, "NXT", "001653007B78");  //School "00165309782B"
 	
-//	public static void main(String args[]) {
-//		try	{
-//			NXJHost m_instance = new NXJHost();
-//			m_instance.run(args);
-//		} catch (Throwable t) {
-//			System.err.println("Error: " + t.getMessage());
-//			System.exit(1);
-//		}
-//	}
-	
-	public NXJHost()
-	{
-		//instance here
-		//fParser = new NXJBrowserCommandLineParser();
+	public static void main(String args[]) {
+		try	{
+			MessageFrameworkTester m_instance = new MessageFrameworkTester();
+			m_instance.run(args);
+		} catch (Throwable t) {
+			System.err.println("Error: " + t.getMessage());
+			System.exit(1);
+		}
 	}
 	
-	public void run(String[] args)  { // throws js.tinyvm.TinyVMException, NXTCommException
+	public MessageFrameworkTester()
+	{
+		MessageFramwork.getInstance().addMessageListener(this);
+	
+		Message msg = new Message(MessageType.Command, "Hello World");
+		MessageFramwork.getInstance().SendMessage( msg );
+		
+		
+//		Message result = Message.setEncodedMsg(encoded);
+//		System.out.println("Payload: " + result.m_payload.toString());
+//		System.out.println("MsgType: " + result.m_msgType);
+	}
+	
+	public void run(String[] args)  { 
 		
 		    m_frame = new JFrame(title);
 		    
@@ -75,6 +71,7 @@ public class NXJHost
 		      }
 		    };
 		    
+		    
 		    m_frame.addWindowListener(listener);
 		    
 		    //Read command line variables
@@ -85,7 +82,7 @@ public class NXJHost
 		    
 		    connectButton.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
-		    	m_btOpen = ConnectToNXT(m_info);
+//--->		    	m_btOpen = ConnectToNXT(m_info);
 		    	
 		    	if (!m_btOpen) {
 			    	JOptionPane.showMessageDialog(m_frame, "Failed to connect");
@@ -95,24 +92,26 @@ public class NXJHost
 			    	connectButton.setEnabled(false);
 			    	m_commandTextArea.append("Connection to " + m_info.name );
 			    	
-			    	for(int i=0; i<10; i++)
-			    	{
-			    		try {
+//--->			    	m_reader.start();
 
-			    			String result =  Character.toString( m_dis.readChar() );
-							m_logTextArea.append(result );
-							System.out.println(result);
-							
-							//m_logTextArea.repaint();
-							
-							//Thread.currentThread();
-							Thread.sleep(500);
-						} catch (IOException e) {
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-			    	}
+			    	//			    	for(int i=0; i<10; i++)
+//			    	{
+//			    		try {
+//
+//			    			String result =  Character.toString( m_dis.readChar() );
+//							m_logTextArea.append(result );
+//							System.out.println(result);
+//							
+//							//m_logTextArea.repaint();
+//							
+//							//Thread.currentThread();
+//							Thread.sleep(500);
+//						} catch (IOException e) {
+//							e.printStackTrace();
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}
+//			    	}
 			    }
 		      }
 		    });
@@ -136,29 +135,14 @@ public class NXJHost
 		     //m_frame.pack();
 		    m_frame.setVisible(true);
 	}
-	
-	protected boolean ConnectToNXT(NXTInfo info)
-	{
-		NXTComm nxtComm = null;
-		
-		try {
-			nxtComm = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
-			boolean result = nxtComm.open(info);
-			
-			m_dos = new DataOutputStream( nxtComm.getOutputStream() );
-			m_dis = new DataInputStream( nxtComm.getInputStream() );
-			
-			return result;
-			
-	    } catch (NXTCommException n) {
-	    	m_btOpen = false;
-		}
-	    
-//		NXTComm communication = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
-//		communication.open(info);
-//		
-		return false;
+
+	@Override
+	public void recievedNewMessage(Message msg) {
+		System.out.println("Recieved: " + new String(msg.getEncodedMsg()) );		
 	}
+	
+
+	
 	
 	
 	
