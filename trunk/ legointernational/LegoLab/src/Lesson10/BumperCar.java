@@ -1,9 +1,5 @@
 package Lesson10;
 
-import Common.BluetoothLogger;
-import Common.ILogger;
-import Common.MultiLogger;
-import Lesson2.SonicSensorTest;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.Motor;
@@ -13,6 +9,8 @@ import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
+import Logger.BluetoothLogger;
+import Logger.ILogger;
 
 /**
  * Demonstration of the Behavior subsumption classes.
@@ -123,6 +121,7 @@ class DetectWall implements Behavior
 class Exit implements Behavior
 {
 
+	@SuppressWarnings("unused")
 	private boolean _suppressed = false;
 	
 	public Exit()

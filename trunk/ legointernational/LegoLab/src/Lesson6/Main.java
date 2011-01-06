@@ -1,16 +1,19 @@
 package Lesson6;
 
-import java.util.ArrayList;
 import java.util.Queue;
 
-import Common.BluetoothLogger;
-import Common.Car;
-import Common.ILogger;
-import Lesson6.TurnHandler.Direction;
-import lejos.nxt.*;
+import lejos.nxt.Button;
+import lejos.nxt.LCD;
+import lejos.nxt.Motor;
+import lejos.nxt.MotorPort;
+import lejos.nxt.SensorPort;
 import lejos.nxt.addon.RCXLightSensor;
 import lejos.nxt.addon.TiltSensor;
 import lejos.util.Stopwatch;
+import Common.Car;
+import Lesson6.TurnHandler.Direction;
+import Logger.BluetoothLogger;
+import Logger.ILogger;
 
 /**
  *

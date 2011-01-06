@@ -1,4 +1,4 @@
-package Common;
+package Networking;
 public enum LIMessageType
 {
 	Command,

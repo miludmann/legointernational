@@ -1,8 +1,6 @@
 package Lesson7;
 
-import Common.BluetoothLogger;
 import Common.Car;
-import Common.ILogger;
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
@@ -10,6 +8,8 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.SensorPortListener;
 
 import Common.Car;
+import Logger.BluetoothLogger;
+import Logger.ILogger;
 
 /**
  * The locomotions of a  LEGO 9797 car is controlled by

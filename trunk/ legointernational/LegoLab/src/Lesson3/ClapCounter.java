@@ -13,7 +13,7 @@ import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
 import lejos.nxt.SensorPort;
 import lejos.nxt.SensorPortListener;
-import Common.MultiLogger;
+import Logger.MultiLogger;
 
 public class ClapCounter {
 

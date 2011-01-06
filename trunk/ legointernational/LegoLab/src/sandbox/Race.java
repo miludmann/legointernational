@@ -1,4 +1,5 @@
-package Common;
+package sandbox;
+import Common.Car;
 import lejos.nxt.*;
 
 public class Race {

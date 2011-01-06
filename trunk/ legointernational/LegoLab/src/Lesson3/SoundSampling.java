@@ -4,8 +4,8 @@ import lejos.nxt.Button;
 import lejos.nxt.LCD;
 import lejos.nxt.SensorPort;
 import lejos.nxt.SoundSensor;
-import Common.BluetoothLogger;
-import Common.ILogger;
+import Logger.BluetoothLogger;
+import Logger.ILogger;
 /**
  * A simple sound sensor sampling program
  * that samples the sensor with a fixed sample interval

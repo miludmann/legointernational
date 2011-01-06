@@ -1,6 +1,8 @@
-package Common;
+package Logger;
 
 import java.io.IOException;
+
+import Networking.BluetoothHandler;
 
 import lejos.nxt.LCD;
 

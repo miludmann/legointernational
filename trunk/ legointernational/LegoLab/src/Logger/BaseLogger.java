@@ -1,4 +1,4 @@
-package Common;
+package Logger;
 
 abstract class BaseLogger implements ILogger
 {
