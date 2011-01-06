@@ -5,7 +5,7 @@ import lejos.nxt.LCD;
 import lejos.nxt.SensorPort;
 import lejos.nxt.SoundSensor;
 import Common.BluetoothCommander;
-import Common.BluetoothLogger;
+
 /**
  * A simple sound sensor sampling program
  * that samples the sensor with a fixed sample interval
@@ -16,20 +16,20 @@ import Common.BluetoothLogger;
  * @author  Ole Caprani
  * @version 2.09.08
  * 
- * @author Duhrberg
+ * @author Dyhrberg
  * Adjusted to use the MultiLogger instead of the DataLogger
  */
 public class SoundSampling 
 {
    public static void main(String [] args) throws Exception
    {
-SoundSensor s = new SoundSensor(SensorPort.S1);
+	   SoundSensor s = new SoundSensor(SensorPort.S1);
        
        //MultiLogger logger = new MultiLogger("Sample.txt");
-       BluetoothLogger logger = new BluetoothLogger();
+       //BluetoothLogger logger = new BluetoothLogger();
        
-       //BluetoothCommander commander = new BluetoothCommander();
-       //commander.StartListen();
+       BluetoothCommander commander = new BluetoothCommander();
+       commander.StartListen();
        
        int soundLevel;
 	   
@@ -37,7 +37,7 @@ SoundSensor s = new SoundSensor(SensorPort.S1);
 
        StringBuilder sb = new StringBuilder();
        
-       while (! Button.ESCAPE.isPressed())
+       while (!Button.ESCAPE.isPressed())
        {	
     	   sb = new StringBuilder();
     	   
@@ -49,9 +49,9 @@ SoundSensor s = new SoundSensor(SensorPort.S1);
            for(int i=0; i<soundLevel; i++)
         	   sb.append("*");
            
-           logger.log(sb.toString());
+          // logger.log(sb.toString());
        }
-       logger.close();
+       //logger.close();
        
        LCD.clear();
        LCD.drawString("Program stopped", 0, 0);
