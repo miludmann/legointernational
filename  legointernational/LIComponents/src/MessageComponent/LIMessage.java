@@ -45,9 +45,3 @@ public class LIMessage {
 		return new LIMessage(msgType, payload);
 	}
 }
-
-enum LIMessageType
-{
-	Command,
-	Debug
-}
