@@ -4,8 +4,8 @@ public class LIMessage {
 	public static byte STX = 2;
 	public static byte ETX = 3;
 	
-	protected LIMessageType m_msgType; 
-	protected String m_payload;
+	public LIMessageType m_msgType; 
+	public String m_payload;
 	
 	public LIMessage(LIMessageType msgType, String payload){
 		m_msgType = msgType;
