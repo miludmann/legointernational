@@ -25,6 +25,7 @@ class RemoteControl extends Thread implements MessageListenerInterface {
     LCD.drawString("Waiting",0,0); 
     BluetoothCommander btc = new BluetoothCommander();
     btc.addMessageListener(this);
+    btc.StartListen();
     LCD.drawString("Connected",0,0); 
    
     
@@ -34,25 +35,40 @@ class RemoteControl extends Thread implements MessageListenerInterface {
   }
 
   	@Override
-	public void recievedNewMessage(LIMessage msg) {
-  		byte command = (byte)msg.m_payload.charAt(0);
-		
-		switch (command) { 
-		case STOP: 
-		  pilot.stop(); 
-		  break; 
-		case FORWARD: 
+	public void recievedNewMessage(LIMessage msg) {		
+  		LCD.drawString("Command: "+msg.m_payload, 0, 5);
+  		if(msg.m_payload.equals("0"))
+  		{
+		  pilot.stop();
+		  LCD.clearDisplay();
+		  LCD.drawString("STOP", 0, 6);
+  		}
+  		else if(msg.m_payload.equals("1"))
+  		{
 		  pilot.forward(); 
-		  break; 
-		case BACKWARD: 
+		  LCD.clearDisplay();
+		  LCD.drawString("FORWARD", 0, 6);
+  		}
+  		else if(msg.m_payload.equals("2"))
+  		{
 		  pilot.backward(); 
-		  break; 
-		case LEFT: 
+		  LCD.clearDisplay();
+		  LCD.drawString("BACKWARD", 0, 6);
+  		}
+  		else if(msg.m_payload.equals("3"))
+  		{
 		  pilot.steer(-200); 
-		  break; 
-		case RIGHT: 
+		  LCD.clearDisplay();
+		  LCD.drawString("LEFT", 0, 6);
+  		}
+  		else if(msg.m_payload.equals("4"))
+  		{
 		  pilot.steer(200); 
-		  break; 
-		} 
+		  LCD.clearDisplay();
+		  LCD.drawString("RIGHT", 0, 6);
+  		} else {
+  			LCD.drawString("No match", 0, 6);
+  		}
+		
 	} 
 } 
