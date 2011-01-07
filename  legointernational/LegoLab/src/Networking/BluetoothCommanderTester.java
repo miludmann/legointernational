@@ -2,6 +2,7 @@ package Networking;
 
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
+import lejos.nxt.LCD;
 import lejos.nxt.Sound;
 
 public class BluetoothCommanderTester implements MessageListenerInterface {
@@ -46,6 +47,29 @@ public class BluetoothCommanderTester implements MessageListenerInterface {
 
 	@Override
 	public void recievedNewMessage(LIMessage msg) {
-		Sound.beep();		
+		
+		LCD.drawString(msg.m_payload, 0, 0);
+		LCD.drawString("length: " + msg.m_payload.length(), 0, 1);
+		
+		if(msg.m_payload.equals("0"))
+		{
+			LCD.drawString("BEEP", 0, 2);
+			Sound.beep();
+		}
+		else if(msg.m_payload.equals("1"))
+		{
+			LCD.drawString("BUZZ", 0, 2);
+			Sound.buzz();
+		}
+		else if(msg.m_payload.equals("2"))
+		{
+			LCD.drawString("TwoBEEP", 0, 2);
+			Sound.twoBeeps();
+		}
+		else
+		{
+			LCD.drawString("No Match ???", 0, 2);
+			Sound.beepSequenceUp();
+		}
 	}
 }
