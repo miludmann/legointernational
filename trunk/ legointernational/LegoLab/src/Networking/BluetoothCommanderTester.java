@@ -1,11 +1,9 @@
-package sandbox;
+package Networking;
 
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
-import Networking.BluetoothCommander;
-import Networking.LIMessage;
-import Networking.LIMessageType;
+import lejos.nxt.Sound;
 
 /**
  * A test program to test the bluetooth commander 
@@ -13,14 +11,22 @@ import Networking.LIMessageType;
  * @author Dyhrberg
  * @version 1.00.00
  */
-public class LIMFEcho 
+public class BluetoothCommanderTester implements MessageListenerInterface 
 {
    public static void main(String [] args) throws Exception
    {
-       final BluetoothCommander m_commander = new BluetoothCommander();
-       
-       
-       //m_commander.StartListen();
+	   BluetoothCommanderTester bct = new BluetoothCommanderTester();
+	   bct.run();
+   }
+   
+   public BluetoothCommanderTester() {
+   }
+   
+   public void run()
+   {
+	   final BluetoothCommander m_commander = new BluetoothCommander();
+       m_commander.addMessageListener(this);
+       m_commander.StartListen();
        
        Button.LEFT.addButtonListener(new ButtonListener() {
 		   @Override
@@ -46,10 +52,20 @@ public class LIMFEcho
 	   {
 	   }
 
-       //m_commander.StopListen();
+       m_commander.StopListen();
        
        LCD.clear();
        LCD.drawString("Program stopped", 0, 0);
-       Thread.sleep(2000);
+       
+       try {
+		Thread.sleep(2000);
+       } catch (InterruptedException e) {
+			LCD.drawString(e.getMessage(), 0, 0);
+       }
    }
+
+	@Override
+	public void recievedNewMessage(LIMessage msg) {
+		Sound.beep();		
+	}
 }
