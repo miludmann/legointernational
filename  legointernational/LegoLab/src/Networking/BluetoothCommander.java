@@ -1,6 +1,7 @@
 package Networking;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import lejos.nxt.LCD;
 
@@ -8,10 +9,21 @@ public class BluetoothCommander {
 	
 	protected BluetoothHandler m_bth;
 	protected boolean m_keepRunning = true;
+	protected ArrayList<MessageListenerInterface> m_messageListeners;
+	protected Object m_guard;
+
+	private Reader m_reader;
+	private ArrayList<Byte> m_receivedBytes;
 	
 	public BluetoothCommander()
 	{
 		m_bth = BluetoothHandler.getInstance();
+		m_receivedBytes = new ArrayList<Byte>();
+		m_messageListeners = new ArrayList<MessageListenerInterface>();
+		m_guard = new Object();
+		
+		m_reader = new Reader(); 
+    	m_reader.setDaemon(true);
 	}
 	
 	public void SendMessage(LIMessage msg)
@@ -29,32 +41,109 @@ public class BluetoothCommander {
 	public void StartListen()
 	{
 		m_keepRunning = true;
+		m_reader.start(); //Start to listen for incoming messages
 		
-		while(m_keepRunning)
-		{
-			try {
-				byte[] buffer = new byte[100];
-				
-				m_bth.getInputStream().read(buffer, 0, 20);
-				
-				LCD.drawString("IN: " + new String(buffer), 0, 0);
-				
-			} catch (IOException e) {
-				LCD.drawString(e.getMessage(), 0, 0);
-			}
-			
-			try {
-				
-				Thread.sleep(50); // Just check for commands 20 times pr. second.
-			
-			} catch (InterruptedException e) {
-				LCD.drawString(e.getMessage(), 0, 0);
-			} 
-		}
+//		while(m_keepRunning)
+//		{
+//			try {
+//				byte[] buffer = new byte[100];
+//				
+//				((DataInputStream)m_bth.getInputStream()).   .read(buffer, 0, 20);
+//				
+//				LCD.drawString("IN: " + new String(buffer), 0, 0);
+//				
+//			} catch (IOException e) {
+//				LCD.drawString(e.getMessage(), 0, 0);
+//			}
+//			
+//			try {
+//				
+//				Thread.sleep(50); // Just check for commands 20 times pr. second.
+//			
+//			} catch (InterruptedException e) {
+//				LCD.drawString(e.getMessage(), 0, 0);
+//			} 
+//		}
+	}
+	
+	private class Reader extends Thread
+    {
+        public void run()
+        {
+            while (m_keepRunning)
+            {
+                try {
+                    
+                	int input = (byte)m_bth.getInputStream().read();
+                	if(input != -1)
+                	{
+                		m_receivedBytes.add((byte)input);
+                		
+                		//Check if this is a packet frame end <ETX>
+                    	if(input == (byte)3) //ETX
+                    		RecievedNewPacket();
+                	}
+                	else
+                	{
+                		//No data. Sleep to save energy.
+                		try {
+							sleep(10);
+						} catch (InterruptedException e) {}
+                	}
+                }
+                catch (IOException e) {
+                	System.err.println(e.getMessage());
+                }
+            }        
+        }
+    }
+	    
+    private void RecievedNewPacket()
+    {
+    	byte[] msgBytes = new byte[m_receivedBytes.size()];
+    	for(int i=0; i<m_receivedBytes.size(); i++)
+    	{
+    		msgBytes[i] = m_receivedBytes.get(i);
+    	}
+
+    	m_receivedBytes.clear();
+    	
+    	//only create and transmit the message if it is valid
+    	if(isPacketValid(msgBytes))
+    	{
+    		LIMessage msg = LIMessage.setEncodedMsg(msgBytes);
+    		for(int j=0; j<m_messageListeners.size(); j++)
+    		{
+				synchronized (m_guard) {
+	    			m_messageListeners.get(j).recievedNewMessage(msg);
+	    		}
+    		}
+    	}
+    	else
+    	{
+    		System.out.println("Invalid Packet:" + new String(msgBytes));
+    	}
+    }
+	    
+    private boolean isPacketValid(byte[] packet)
+    {
+    	if(packet[0] != (byte)2) //Does it contain a start frame byte?	
+    		return false;
+    	else if(packet[2] != (byte)':') //Does it contain the command payload seperator?
+    		return false;
+    	else if(packet[packet.length-1] != (byte)3) //Does it contain an end frame byte?
+    		return false;
+    	else
+    		return true;
+    }
+    
+    public void addMessageListener(MessageListenerInterface msgListener)
+	{
+		m_messageListeners.add(msgListener);
 	}
 	
 	public void StopListen()
 	{
-		m_keepRunning = false;
+		m_keepRunning = true;
 	}
 }
