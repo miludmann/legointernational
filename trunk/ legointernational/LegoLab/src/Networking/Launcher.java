@@ -11,7 +11,7 @@ public class Launcher
 {
 	public static void main(String [] args) throws Exception
 	{
-		BluetoothCommanderTester bct = new BluetoothCommanderTester();
+		MessageFrameworkTester bct = new MessageFrameworkTester();
 		bct.launch();
 	}
 }

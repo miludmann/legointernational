@@ -5,12 +5,12 @@ import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
 import lejos.nxt.Sound;
 
-public class BluetoothCommanderTester implements MessageListenerInterface {
+public class MessageFrameworkTester implements MessageListenerInterface {
 
-	protected BluetoothCommander m_commander;   
+	protected MessageFramework m_commander;   
 	   
-	public BluetoothCommanderTester() {
-		m_commander = new BluetoothCommander();
+	public MessageFrameworkTester() {
+		m_commander = MessageFramework.getInstance();
 	}
 	   
 	public void launch() {
