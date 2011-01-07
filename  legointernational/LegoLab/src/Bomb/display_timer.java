@@ -29,23 +29,18 @@ public class display_timer {
 	
 
 	protected static File danger;
-	public static int bombTime = 530; // seconds received from host #####
+	public static int bombTime = 30; // seconds received from host #####
 	
 	static int seconds;
 	static int minutes;
 	int sec;// = seconds;
 	int min;// = minutes;
-	
+	public String message="drop";
 	
 
-	public void final_countdown(){}
-	
-public static void main(String [] options) throws Exception{
-	
-	
+	public static void final_countdown() throws InterruptedException{
 		
-	
-		ArrayList<Image> images = new ArrayList<Image>();
+ArrayList<Image> images = new ArrayList<Image>();
 		
 		images.add(new Image(29, 39, zero));
 		
@@ -62,74 +57,70 @@ public static void main(String [] options) throws Exception{
 		Image colonn = new Image (4, 39, colon);
 		
 		
-		
-			
-		
 		while (!Button.ESCAPE.isPressed()) {
-		 
-		 Graphics g = new Graphics();
-		
-		 int counter;
-		 double seconds1;
-		 double seconds2;
-		 double sec11;
+			 
+			 Graphics g = new Graphics();
+			
+			 int counter;
+			 double seconds1;
+			 double seconds2;
+			 double sec11;
 
-	for (int i = 0; i<=bombTime ; i++){
+		for (int i = 0; i<=bombTime ; i++){
+				
+				
+			counter = bombTime - i;
+			seconds = counter % 60;
+			minutes = (counter - seconds) / 60;
 			
+			sec11 = ((double)seconds / 10d);
+			seconds1 = ((double)seconds / 10d);
+			seconds1 = Math.floor(seconds1);
+			seconds2 = Math.round((sec11 - seconds1)*10d);
+			Image min = images.get(minutes);
+			Image sec1 = images.get((int)seconds1);
+			Image sec2 = images.get((int)seconds2);
 			
-		counter = bombTime - i;
-		seconds = counter % 60;
-		minutes = (counter - seconds) / 60;
-		
-		sec11 = ((double)seconds / 10d);
-		seconds1 = ((double)seconds / 10d);
-		seconds1 = Math.floor(seconds1);
-		seconds2 = Math.round((sec11 - seconds1)*10d);
-		Image min = images.get(minutes);
-		Image sec1 = images.get((int)seconds1);
-		Image sec2 = images.get((int)seconds2);
-		
-			 //g.clear();
-			 g.drawImage(min, 0, 0, false);
-			 g.drawImage(colonn,32,0, false);
-			 g.drawImage(sec1, 38, 0, false);
-			 g.drawImage(sec2, 70, 0, false);
-			 //g.drawString(""+seconds2, 1, 40);
+				 //g.clear();
+				 g.drawImage(min, 0, 0, false);
+				 g.drawImage(colonn,32,0, false);
+				 g.drawImage(sec1, 38, 0, false);
+				 g.drawImage(sec2, 70, 0, false);
+				 //g.drawString(""+seconds2, 1, 40);
+				 
+				//Sound.beep();
+				 
+				 if (counter==0)
+					 Sound.buzz();
+				Thread.sleep(1000);
 			 
-			//Sound.beep();
-			 
-			 if (counter==0)
-				 Sound.buzz();
-			Thread.sleep(1000);
-		 
+		}
+			}		
+		
+			 // when bomb lays on the brick, sensor is on
+			 TouchSensor theBomb = new TouchSensor(SensorPort.S1);
+			 while (!theBomb.isPressed());
+			 Sound.beep();
+			 Thread.sleep(1000);	
 	}
-		}		
-		 //Thread.sleep(2000);
-		 //LCD.bitBlt(data, 65, 84, 0, 0, 65, 84, 65, 84, 0);
-//		 LCD.drawString("Hello World", 20, 20);
-//		 try {
-//			Thread.sleep(100000);
-//		
-//		 } catch (InterruptedException e) {
-//			
-//		}
-//		 
-//		 Sound.setVolume(100);
-//		 
-//		 
-//		 
-//		danger = new File("Danger.rso");
-//		 
-//		 
-//		 
-//		 Sound.playSample(danger);
-//		 
-		 // when bomb lays on the brick, sensor is on
-		 TouchSensor theBomb = new TouchSensor(SensorPort.S1);
-		 while (!theBomb.isPressed());
-		 Sound.beep();
-		Thread.sleep(1000);
-	   
+	
+	public static void defused() throws InterruptedException{
+	
+	}
+	
+	public static void listener() throws InterruptedException{
+		// Waits for the right command
+	//Motor.A.lock(80);
+	//	Motor.B
+		Thread.sleep(500);
+		
+	}
+	
+	
+public static void main(String [] options) throws Exception{
+	
+	final_countdown();
+			   
 	 }
 		
 }
