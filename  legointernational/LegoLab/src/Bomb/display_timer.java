@@ -51,7 +51,9 @@ public class display_timer implements MessageListenerInterface{
 	
 	display_timer(int bombTime) {
 		
-		
+		m_btc = new BluetoothCommander();
+		m_btc.addMessageListener(this);
+		m_btc.StartListen();
 		
 		m_images = new ArrayList<Image>();
 		
@@ -84,9 +86,7 @@ public class display_timer implements MessageListenerInterface{
 		
 		while (m_remainingBombTime > 0 && !Button.ESCAPE.isPressed()) {
 			 
-			m_btc = new BluetoothCommander();
-			m_btc.addMessageListener(this);
-			m_btc.StartListen();
+			
 			
 			for (int i = 0; i <= m_startBombTime ; i++) {
 				
