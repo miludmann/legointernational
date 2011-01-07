@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import lejos.nxt.*;
+import Networking.*;
 
 
 
 
-
-public class display_timer {
+public class display_timer implements MessageListenerInterface{
 	
 	// Bomb font didits saved in binary format
 	private static byte[] one = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xc0, (byte) 0xf0, (byte) 0xfc, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfc, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x0c, (byte) 0x0f, (byte) 0x1f, (byte) 0x1f, (byte) 0x3f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
@@ -27,100 +27,152 @@ public class display_timer {
 	private static byte[] colon = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x1e, (byte) 0x1e, (byte) 0x1e, (byte) 0x1e, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x3c, (byte) 0x3c, (byte) 0x3c, (byte) 0x3c, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
 	private static byte[] empty = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
 	
+	
+//	private Motor redLight = new Motor(MotorPort.C);
+//	private Motor greenLight = new Motor(MotorPort.B);	
+//	private Motor claw_m = new Motor(MotorPort.A);
 
+	protected BluetoothCommander m_btc;
+	
 	protected static File danger;
-	public static int bombTime = 30; // seconds received from host #####
+	 // seconds received from host #####
 	
-	static int seconds;
-	static int minutes;
-	int sec;// = seconds;
-	int min;// = minutes;
-	public String message="drop";
+	protected ArrayList<Image> m_images;
+	protected Image m_colonn;
 	
+	protected int m_startBombTime;
+	protected int m_remainingBombTime;
 
-	public static void final_countdown() throws InterruptedException{
-		
-ArrayList<Image> images = new ArrayList<Image>();
-		
-		images.add(new Image(29, 39, zero));
-		
-		images.add(new Image (29, 39, one));
-		images.add(new Image (29, 39, two));
-		images.add(new Image (29, 39, three));
-		images.add(new Image (29, 39, four));
-		images.add(new Image (29, 39, five));
-		images.add(new Image (29, 39, six));
-		images.add(new Image (29, 39, seven));
-		images.add(new Image (29, 39, eight));
-		images.add(new Image (29, 39, nine));
-		images.add(new Image (29, 39, empty));
-		Image colonn = new Image (4, 39, colon);
+	protected int m_minutes;
+	protected int m_seconds1;
+	protected int m_seconds2;
+	
+	protected boolean m_beepEnabled = false;
+	
+	display_timer(int bombTime) {
 		
 		
-		while (!Button.ESCAPE.isPressed()) {
+		
+		m_images = new ArrayList<Image>();
+		
+		m_images.add(new Image(29, 39, zero));
+		
+		m_images.add(new Image (29, 39, one));
+		m_images.add(new Image (29, 39, two));
+		m_images.add(new Image (29, 39, three));
+		m_images.add(new Image (29, 39, four));
+		m_images.add(new Image (29, 39, five));
+		m_images.add(new Image (29, 39, six));
+		m_images.add(new Image (29, 39, seven));
+		m_images.add(new Image (29, 39, eight));
+		m_images.add(new Image (29, 39, nine));
+		m_images.add(new Image (29, 39, empty));
+		
+		m_colonn = new Image (4, 39, colon);
+		
+		setBombTime(bombTime);
+	}
+	
+	public void setBombTime(int seconds) {
+		m_startBombTime = seconds;
+		m_remainingBombTime = seconds;
+	}
+	
+	public void startCountdown() {
+		
+		
+		
+		while (m_remainingBombTime > 0 && !Button.ESCAPE.isPressed()) {
 			 
-			 Graphics g = new Graphics();
+			m_btc = new BluetoothCommander();
+			m_btc.addMessageListener(this);
+			m_btc.StartListen();
 			
-			 int counter;
-			 double seconds1;
-			 double seconds2;
-			 double sec11;
+			for (int i = 0; i <= m_startBombTime ; i++) {
+				
+				CalculateImageNumbers(i);
+				RefreshLCD();
+				
+				if(m_beepEnabled)
+					Sound.beep();
+				 
+				try {
+					Thread.sleep(1000); //Sleep for 1 second before next countdown.
+				} catch (InterruptedException e) {
+					LCD.drawString(e.getMessage(), 0, 0);
+				}
+			 }
+		 }
+		
+		Explode();
+		
+		 // when bomb lays on the brick, sensor is on
+//		 TouchSensor theBomb = new TouchSensor(SensorPort.S1);
+//		 
+//		 while (!theBomb.isPressed());
+//		 
+//		 Sound.beep();
+//		 
+//		 Thread.sleep(1000);	
+	}
+	
+	private void CalculateImageNumbers(int secondsPassed) {
 
-		for (int i = 0; i<=bombTime ; i++){
-				
-				
-			counter = bombTime - i;
-			seconds = counter % 60;
-			minutes = (counter - seconds) / 60;
-			
-			sec11 = ((double)seconds / 10d);
-			seconds1 = ((double)seconds / 10d);
-			seconds1 = Math.floor(seconds1);
-			seconds2 = Math.round((sec11 - seconds1)*10d);
-			Image min = images.get(minutes);
-			Image sec1 = images.get((int)seconds1);
-			Image sec2 = images.get((int)seconds2);
-			
-				 //g.clear();
-				 g.drawImage(min, 0, 0, false);
-				 g.drawImage(colonn,32,0, false);
-				 g.drawImage(sec1, 38, 0, false);
-				 g.drawImage(sec2, 70, 0, false);
-				 //g.drawString(""+seconds2, 1, 40);
-				 
-				//Sound.beep();
-				 
-				 if (counter==0)
-					 Sound.buzz();
-				Thread.sleep(1000);
-			 
+		int remainingSeconds;
+		m_remainingBombTime = m_startBombTime - secondsPassed;
+		remainingSeconds = m_remainingBombTime % 60;
+		
+		m_minutes = (m_remainingBombTime - remainingSeconds) / 60;
+		m_seconds1 = (int)Math.floor((remainingSeconds / 10)); //Calculating the 1st digit of the seconds 27s /10 = 2,7 Floor = 2
+		m_seconds2 = (int)Math.round( (  ((double)remainingSeconds / 10d) - (double)m_seconds1) * 10d); //Calculating 2nd digit, 27/10 - 2 (seconds1) = 0,7 x 10 = 7
+	}
+
+	private void RefreshLCD() {
+		
+		Graphics g = new Graphics();
+		
+		Image imgMin = m_images.get(m_minutes);
+		Image imgSec1 = m_images.get(m_seconds1);
+		Image imgSec2 = m_images.get(m_seconds2);
+	
+		//g.clear();
+		g.drawImage(imgMin, 0, 0, false);
+		g.drawImage(m_colonn,32,0, false);
+		g.drawImage(imgSec1, 38, 0, false);
+		g.drawImage(imgSec2, 70, 0, false);
+		
+		//debugging
+		g.drawString("Remaining: " + m_remainingBombTime, 1, 40);
+		g.drawString("Start: " + m_startBombTime, 1, 48);
+	}
+	
+	public void setBeepEnabled(boolean enabled)
+	{
+		m_beepEnabled = enabled;
+	}
+
+	protected void Explode() {
+		Sound.buzz();
+		
+		LIMessage msg = new LIMessage(LIMessageType.Command, "boom");
+		m_btc.SendMessage(msg);
+		
+		
+	}
+	
+	public void defused() {
+	
+	}
+
+	@Override
+	public void recievedNewMessage(LIMessage msg) {
+		String cmd = msg.m_payload.substring(0, 1);
+		
+		if(cmd.equals("GT"))
+		{
+			Sound.beepSequenceUp();
 		}
-			}		
-		
-			 // when bomb lays on the brick, sensor is on
-			 TouchSensor theBomb = new TouchSensor(SensorPort.S1);
-			 while (!theBomb.isPressed());
-			 Sound.beep();
-			 Thread.sleep(1000);	
+				
 	}
-	
-	public static void defused() throws InterruptedException{
-	
-	}
-	
-	public static void listener() throws InterruptedException{
-		// Waits for the right command
-	//Motor.A.lock(80);
-	//	Motor.B
-		Thread.sleep(500);
-		
-	}
-	
-	
-public static void main(String [] options) throws Exception{
-	
-	final_countdown();
-			   
-	 }
 		
 }
