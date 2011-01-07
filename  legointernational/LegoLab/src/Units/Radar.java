@@ -2,7 +2,6 @@ package Units;
 
 import lejos.nxt.LCD;
 import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 
 public class Radar extends Thread {

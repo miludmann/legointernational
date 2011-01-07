@@ -20,7 +20,7 @@ public class LocalRemote {
     radar.start();
     
     // Drive forward 
-    pilot.forward(); 
+//    pilot.forward(); 
     
     // Avoid obstacles 
     while(!Button.ESCAPE.isPressed()) { 
@@ -30,7 +30,7 @@ public class LocalRemote {
   } 
 
   public static void main(String[] args) { 
-    new LocalRemote().run(); 
+	  new LocalRemote().run(); 
   } 
 
 
