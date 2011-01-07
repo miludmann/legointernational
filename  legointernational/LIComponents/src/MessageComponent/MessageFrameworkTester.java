@@ -11,7 +11,6 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -27,7 +26,7 @@ public class MessageFrameworkTester implements MessageListenerInterface
 	private JFrame m_frame;
 	
 	protected final JPanel buttonPanel = new JPanel(); 
-	protected final JButton connectButton = new JButton("Connect");
+	protected final JButton TestButton = new JButton("Test");
 	protected final JTextArea m_logTextArea = new JTextArea();
 	protected final JTextArea m_commandTextArea = new JTextArea();
 
@@ -72,21 +71,20 @@ public class MessageFrameworkTester implements MessageListenerInterface
 		    
 		    m_frame.addWindowListener(listener);
 		    
-		    connectButton.addActionListener(new ActionListener() {
+		    TestButton.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
+		    		
+		    	m_commandTextArea.append("Sending test msg to Brick");
 		    	
-		    	if (!m_btOpen) {
-			    	JOptionPane.showMessageDialog(m_frame, "Failed to connect");
-			    	m_commandTextArea.append("FAILED connecting to " + m_info.name );
-			    }
-			    else {
-			    	connectButton.setEnabled(false);
-			    	m_commandTextArea.append("Connection to " + m_info.name );
-			    }
+		    	LIMessage msg = new LIMessage(LIMessageType.Command, "TEST MESSAGE");
+		    	MessageFramwork.getInstance().SendMessage(msg);
+		    	
+		    	m_commandTextArea.append("Sent");
+			    
 		      }
 		    });
 		    
-		    buttonPanel.add(connectButton);
+		    buttonPanel.add(TestButton);
 		    
 		    m_logTextArea.setEditable(false);
 		    final JScrollPane logPane = new JScrollPane(m_logTextArea);
