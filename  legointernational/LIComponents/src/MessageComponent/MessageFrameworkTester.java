@@ -26,14 +26,20 @@ public class MessageFrameworkTester implements MessageListenerInterface
 	private JFrame m_frame;
 	
 	protected final JPanel buttonPanel = new JPanel(); 
-	protected final JButton TestButton = new JButton("Test");
+	protected final JButton StopButton = new JButton("Stop");
+	protected final JButton ForwardButton = new JButton("Forward");
+	protected final JButton BackwardButton = new JButton("Backward");
+	protected final JButton LeftButton = new JButton("Left");
+	protected final JButton RightButton = new JButton("Right");
+	
 	protected final JTextArea m_logTextArea = new JTextArea();
 	protected final JTextArea m_commandTextArea = new JTextArea();
 
 	protected static String title = "NXJHost";
 	protected boolean m_btOpen = false;
 	
-	protected NXTInfo m_info = new NXTInfo(NXTCommFactory.BLUETOOTH, "NXT", "001653007B78");  //School "00165309782B"
+	//protected NXTInfo m_info = new NXTInfo(NXTCommFactory.BLUETOOTH, "NXT", "001653007B78");  //School "00165309782B"
+	protected NXTInfo m_info = new NXTInfo(NXTCommFactory.BLUETOOTH, "Freja", "001653099CE9");  //School "00165309782B"
 	
 	public static void main(String args[]) {
 		try	{
@@ -51,8 +57,8 @@ public class MessageFrameworkTester implements MessageListenerInterface
 		MessageFramwork.getInstance().addMessageListener(this);
 		MessageFramwork.getInstance().ConnectToNXT(m_info);
 	
-		LIMessage msg = new LIMessage(LIMessageType.Command, "Hello World");
-		MessageFramwork.getInstance().SendMessage( msg );
+//		LIMessage msg = new LIMessage(LIMessageType.Command, "Hello World");
+//		MessageFramwork.getInstance().SendMessage( msg );
 	}
 	
 	public void run(String[] args)  { 
@@ -71,20 +77,47 @@ public class MessageFrameworkTester implements MessageListenerInterface
 		    
 		    m_frame.addWindowListener(listener);
 		    
-		    TestButton.addActionListener(new ActionListener() {
+		    StopButton.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
-		    		
-		    	m_commandTextArea.append("Sending test msg to Brick");
-		    	
-		    	LIMessage msg = new LIMessage(LIMessageType.Command, "TEST MESSAGE");
-		    	MessageFramwork.getInstance().SendMessage(msg);
-		    	
-		    	m_commandTextArea.append("Sent");
-			    
+		    	LIMessage msg = new LIMessage(LIMessageType.Command, "0");
+		    	MessageFramwork.getInstance().SendMessage(msg); 
 		      }
 		    });
 		    
-		    buttonPanel.add(TestButton);
+		    ForwardButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+		    	LIMessage msg = new LIMessage(LIMessageType.Command, "1");
+		    	MessageFramwork.getInstance().SendMessage(msg);
+		      }
+		    });
+		    
+		    BackwardButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+		    	LIMessage msg = new LIMessage(LIMessageType.Command, "2");
+		    	MessageFramwork.getInstance().SendMessage(msg);
+		      }
+		    });
+		    
+		    LeftButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+		    	LIMessage msg = new LIMessage(LIMessageType.Command, "3");
+		    	MessageFramwork.getInstance().SendMessage(msg);
+		      }
+		    });
+		    
+		    RightButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+		    	LIMessage msg = new LIMessage(LIMessageType.Command, "4");
+		    	MessageFramwork.getInstance().SendMessage(msg);
+		      }
+		    });
+		    
+		    
+		    buttonPanel.add(StopButton);
+		    buttonPanel.add(ForwardButton);
+		    buttonPanel.add(BackwardButton);
+		    buttonPanel.add(LeftButton);
+		    buttonPanel.add(RightButton);
 		    
 		    m_logTextArea.setEditable(false);
 		    final JScrollPane logPane = new JScrollPane(m_logTextArea);
