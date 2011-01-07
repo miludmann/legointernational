@@ -42,28 +42,6 @@ public class BluetoothCommander {
 	{
 		m_keepRunning = true;
 		m_reader.start(); //Start to listen for incoming messages
-		
-//		while(m_keepRunning)
-//		{
-//			try {
-//				byte[] buffer = new byte[100];
-//				
-//				((DataInputStream)m_bth.getInputStream()).   .read(buffer, 0, 20);
-//				
-//				LCD.drawString("IN: " + new String(buffer), 0, 0);
-//				
-//			} catch (IOException e) {
-//				LCD.drawString(e.getMessage(), 0, 0);
-//			}
-//			
-//			try {
-//				
-//				Thread.sleep(50); // Just check for commands 20 times pr. second.
-//			
-//			} catch (InterruptedException e) {
-//				LCD.drawString(e.getMessage(), 0, 0);
-//			} 
-//		}
 	}
 	
 	private class Reader extends Thread
