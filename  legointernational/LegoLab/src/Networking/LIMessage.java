@@ -1,11 +1,12 @@
 package Networking;
+
 public class LIMessage {
 	
 	public static byte STX = 2;
 	public static byte ETX = 3;
 	
-	public LIMessageType m_msgType; 
-	public String m_payload;
+	protected LIMessageType m_msgType; 
+	protected String m_payload;
 	
 	public LIMessage(LIMessageType msgType, String payload){
 		m_msgType = msgType;
@@ -43,5 +44,21 @@ public class LIMessage {
 		String payload = new String(payloadBytesOnly);
 		
 		return new LIMessage(msgType, payload);
+	}
+	
+	public LIMessageType getMsgType() {
+		return m_msgType;
+	}
+
+	public void setMsgType(LIMessageType type) {
+		m_msgType = type;
+	}
+
+	public String getPayload() {
+		return m_payload;
+	}
+
+	public void setPayload(String m_payload) {
+		this.m_payload = m_payload;
 	}
 }

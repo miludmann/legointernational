@@ -5,7 +5,9 @@ import java.util.ArrayList;
 
 import lejos.nxt.LCD;
 
-public class BluetoothCommander {
+public class MessageFramework {
+	
+	private static MessageFramework m_instance = new MessageFramework();
 	
 	protected BluetoothHandler m_bth;
 	protected boolean m_keepRunning = true;
@@ -15,7 +17,7 @@ public class BluetoothCommander {
 	private Reader m_reader;
 	private ArrayList<Byte> m_receivedBytes;
 	
-	public BluetoothCommander()
+	private MessageFramework()
 	{
 		m_bth = BluetoothHandler.getInstance();
 		m_receivedBytes = new ArrayList<Byte>();
@@ -24,6 +26,10 @@ public class BluetoothCommander {
 		
 		m_reader = new Reader(); 
     	m_reader.setDaemon(true);
+	}
+	
+	public static MessageFramework getInstance() {
+		return m_instance;
 	}
 	
 	public void SendMessage(LIMessage msg)
