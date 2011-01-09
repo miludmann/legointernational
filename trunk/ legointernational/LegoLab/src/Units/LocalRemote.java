@@ -35,6 +35,7 @@ public class LocalRemote {
     while(!Button.ESCAPE.isPressed()) {} 
     radar.stop();
     irRadar.stop();
+    compass.stop();
     remote.stop();
     //Wait for the radar returning to its starting position
     while(!radar.isDoneRunning()) {}
