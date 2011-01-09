@@ -33,19 +33,21 @@ public class IRRadar extends Thread{
 		while(irRadarAlive){
 			values = irseeker.getSensorValues();
 			direction = irseeker.getDirection();
-//			for(int i = 0; i<values.length; i++)
-//			{
-//				if(values[i] != valuesOld[i])
-//				{
-//					LCD.drawString(Integer.toString(values[i]), i*3, 7);
-//				}
-//			}
-			if(direction != directionOld)
+			for(int i = 0; i<values.length; i++)
 			{
-				LCD.drawString("IR direction: "+direction, 0, 7);
-				msg = new LIMessage(LIMessageType.Command, "IR "+direction);
-				mfw.SendMessage(msg);
+				if(values[i] != valuesOld[i])
+				{
+//					LCD.drawString(Integer.toString(values[i]), i*3, 7);
+					msg = new LIMessage(LIMessageType.Command, "IRV "+i+" "+values[i]);
+					mfw.SendMessage(msg);
+				}
 			}
+//			if(direction != directionOld)
+//			{
+				LCD.drawString("IR direction: "+direction, 0, 7);
+				msg = new LIMessage(LIMessageType.Command, "IRD "+direction);
+				mfw.SendMessage(msg);
+//			}
 			valuesOld = values;
 			directionOld = direction;
 		}
