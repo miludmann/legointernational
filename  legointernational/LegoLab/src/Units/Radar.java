@@ -28,8 +28,8 @@ public class Radar extends Thread {
 	    listenUS.start();
 
 		while(radarAlive){
-			radar_m.rotate(360);
-			radar_m.rotate(-360);
+			radar_m.rotateTo(360);
+			radar_m.rotateTo(0);
 		}
 		listenUS.stop();
 		goToDefaultPosition();
