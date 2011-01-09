@@ -99,30 +99,36 @@ public class MessageFramework {
     	//only create and transmit the message if it is valid
     	if(isPacketValid(msgBytes))
     	{
-    		LIMessage msg = LIMessage.setEncodedMsg(msgBytes);
-    		for(int j=0; j<m_messageListeners.size(); j++)
-    		{
-				synchronized (m_RXguard) {
-	    			m_messageListeners.get(j).recievedNewMessage(msg);
-	    		}
+    		synchronized (m_RXguard) {
+    			LIMessage msg = LIMessage.setEncodedMsg(msgBytes);
+				for(int j=0; j<m_messageListeners.size(); j++)
+				{
+		    		m_messageListeners.get(j).recievedNewMessage(msg);
+				}
     		}
     	}
     	else
     	{
-    		System.out.println("Invalid Packet:" + new String(msgBytes));
+    		LCD.drawString("Corrupt package", 0, 0);
     	}
     }
 	    
     private boolean isPacketValid(byte[] packet)
     {
-    	if(packet[0] != (byte)2) //Does it contain a start frame byte?	
+    	try
+    	{
+	    	if(packet[0] != (byte)2) //Does it contain a start frame byte?	
+	    		return false;
+	    	else if(packet[2] != (byte)':') //Does it contain the command payload seperator?
+	    		return false;
+	    	else if(packet[packet.length-1] != (byte)3) //Does it contain an end frame byte?
+	    		return false;
+	    	else
+	    		return true;
+    	} catch (Exception e) {
+    		LCD.drawString("Corrupt package", 0, 0);
     		return false;
-    	else if(packet[2] != (byte)':') //Does it contain the command payload seperator?
-    		return false;
-    	else if(packet[packet.length-1] != (byte)3) //Does it contain an end frame byte?
-    		return false;
-    	else
-    		return true;
+    	}
     }
     
     public void addMessageListener(MessageListenerInterface msgListener)
