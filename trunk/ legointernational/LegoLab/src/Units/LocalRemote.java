@@ -5,12 +5,14 @@ import lejos.nxt.Motor;
 import lejos.nxt.MotorPort;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
+import lejos.nxt.addon.CompassSensor;
 import Common.IRSeekerV2;
 import Common.IRSeekerV2.Mode;
 
 public class LocalRemote { 
   private UltrasonicSensor sonic = new UltrasonicSensor(SensorPort.S3); 
   private IRSeekerV2 ir = new IRSeekerV2(SensorPort.S1, Mode.AC); 
+  private CompassSensor cp = new CompassSensor(SensorPort.S2);
   private Motor motor = new Motor(MotorPort.A);
   
   public void run() { 
@@ -18,10 +20,12 @@ public class LocalRemote {
     RemoteControl remote = new RemoteControl(); 
     Radar radar = new Radar(motor, sonic);
     IRRadar irRadar = new IRRadar(ir);
+    Compass compass = new Compass(cp);
     remote.setDaemon(true); 
     remote.start(); 
     radar.start();
     irRadar.start();
+    compass.start();
 
     while(!Button.ESCAPE.isPressed()) {} 
     radar.stop();

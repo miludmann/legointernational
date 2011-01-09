@@ -47,6 +47,7 @@ public class IRRadar extends Thread{
 				mfw.SendMessage(msg);
 			}
 			valuesOld = values;
+			directionOld = direction;
 		}
 	}
 	

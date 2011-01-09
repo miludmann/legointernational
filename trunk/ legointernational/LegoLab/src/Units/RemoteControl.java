@@ -2,6 +2,7 @@ package Units;
 
 import lejos.nxt.LCD;
 import lejos.nxt.Motor;
+import lejos.robotics.navigation.Pilot;
 import lejos.robotics.navigation.TachoPilot;
 import Networking.LIMessage;
 import Networking.MessageFramework;
@@ -68,6 +69,30 @@ class RemoteControl extends Thread implements MessageListenerInterface {
 		  pilot.steer(200, 2000, true); 
 		  LCD.clearDisplay();
 		  LCD.drawString("RIGHT", 0, 6);
+  		}
+  		else if(msg.getPayload().equals("fwdL"))
+  		{
+		  pilot.arc(-20, 360, true);
+		  LCD.clearDisplay();
+		  LCD.drawString("FwdL", 0, 6);
+  		}
+  		else if(msg.getPayload().equals("fwdR"))
+  		{
+		  pilot.arc(20, 360, true); 
+		  LCD.clearDisplay();
+		  LCD.drawString("FwdR", 0, 6);
+  		}
+  		else if(msg.getPayload().equals("rwdL"))
+  		{
+		  pilot.arc(-20, -360, true);
+		  LCD.clearDisplay();
+		  LCD.drawString("RwdL", 0, 6);
+  		}
+  		else if(msg.getPayload().equals("rwdR"))
+  		{
+  		  pilot.arc(20, -360, true);
+		  LCD.clearDisplay();
+		  LCD.drawString("RwdR", 0, 6);
   		}
   		else if(msg.getPayload().equals("increaseSpeed"))
   		{
