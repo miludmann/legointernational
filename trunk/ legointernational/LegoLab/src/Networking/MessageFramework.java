@@ -12,8 +12,10 @@ public class MessageFramework {
 	protected BluetoothHandler m_bth;
 	protected boolean m_keepRunning = true;
 	protected ArrayList<MessageListenerInterface> m_messageListeners;
-	protected Object m_guard;
-
+	protected Object m_RXguard;
+	protected Object m_TXguard;
+	
+	
 	private Reader m_reader;
 	private ArrayList<Byte> m_receivedBytes;
 	
@@ -22,7 +24,8 @@ public class MessageFramework {
 		m_bth = BluetoothHandler.getInstance();
 		m_receivedBytes = new ArrayList<Byte>();
 		m_messageListeners = new ArrayList<MessageListenerInterface>();
-		m_guard = new Object();
+		m_RXguard = new Object();
+		m_TXguard = new Object();
 		
 		m_reader = new Reader(); 
     	m_reader.setDaemon(true);
@@ -34,13 +37,14 @@ public class MessageFramework {
 	
 	public void SendMessage(LIMessage msg)
 	{
-		try {
-		
-			m_bth.getOutputStream().write(msg.getEncodedMsg());
-			m_bth.getOutputStream().flush();
-		
-		} catch (IOException e) {
-			LCD.drawString(e.getMessage(), 0, 0);
+		synchronized (m_TXguard) {
+			try {
+				m_bth.getOutputStream().write(msg.getEncodedMsg());
+				m_bth.getOutputStream().flush();
+			
+			} catch (IOException e) {
+				LCD.drawString(e.getMessage(), 0, 0);
+			}
 		}
 	}
 	
@@ -98,7 +102,7 @@ public class MessageFramework {
     		LIMessage msg = LIMessage.setEncodedMsg(msgBytes);
     		for(int j=0; j<m_messageListeners.size(); j++)
     		{
-				synchronized (m_guard) {
+				synchronized (m_RXguard) {
 	    			m_messageListeners.get(j).recievedNewMessage(msg);
 	    		}
     		}
