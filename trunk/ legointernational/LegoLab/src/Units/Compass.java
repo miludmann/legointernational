@@ -36,7 +36,7 @@ public class Compass extends Thread{
 //			}
 			if(direction != directionOld)
 			{
-				LCD.drawString("Compass : "+direction, 0, 0);
+//				LCD.drawString("Compass : "+direction, 0, 0);
 				msg = new LIMessage(LIMessageType.Command, "CP "+direction);
 				mfw.SendMessage(msg);
 			}

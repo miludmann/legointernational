@@ -63,12 +63,12 @@ public class Radar extends Thread {
 			
 			while(radarAliveListen){
 				dist = radar_us.getDistance();
-				LCD.drawInt(radar_m.getTachoCount(), 3, 0, 4);
+//				LCD.drawInt(radar_m.getTachoCount(), 3, 0, 4);
 				if(dist == 255){
-					LCD.drawString("No obstacle", 0, 3);
+//					LCD.drawString("No obstacle", 0, 3);
 				} else {
 					radarMsg = getCoordinates(dist, radar_m.getTachoCount());
-					LCD.drawString(radarMsg, 0, 3);
+//					LCD.drawString(radarMsg, 0, 3);
 					msg = new LIMessage(LIMessageType.Command, radarMsg);
 					mfw.SendMessage(msg);
 				}

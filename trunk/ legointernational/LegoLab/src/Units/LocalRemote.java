@@ -15,6 +15,11 @@ public class LocalRemote {
   private CompassSensor cp = new CompassSensor(SensorPort.S2);
   private Motor motor = new Motor(MotorPort.A);
   
+//  Java exception
+//  class : 16
+//  method : 199
+//  PC 17503
+  
   public void run() { 
     // Create thread, make it a daemon and start it 
     RemoteControl remote = new RemoteControl(); 
@@ -37,7 +42,7 @@ public class LocalRemote {
   } 
 
   public static void main(String[] args) { 
-	  new LocalRemote().run(); 
+	  new LocalRemote().run();
   } 
 
 
