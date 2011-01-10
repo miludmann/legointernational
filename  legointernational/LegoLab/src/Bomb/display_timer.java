@@ -17,7 +17,7 @@ import Networking.*;
 public class display_timer implements MessageListenerInterface{
 
 	protected static final int CONST_SEQUENCE_LENGTH = 10; // number of colors, sequence length
-	protected static final int CONST_DEFUSABLE_SENSOR_DEBOUNCING = 800; 
+	protected static final int CONST_DEFUSABLE_SENSOR_DEBOUNCING = 1000; 
 	
 	// Bomb font didits saved in binary format
 	private static byte[] one = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xc0, (byte) 0xf0, (byte) 0xfc, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfc, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x0c, (byte) 0x0f, (byte) 0x1f, (byte) 0x1f, (byte) 0x3f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
@@ -64,6 +64,7 @@ public class display_timer implements MessageListenerInterface{
 	
 	protected boolean m_planted = false;
 	protected boolean m_defusable = false;	
+	protected boolean m_defused = false;	
 	
 	display_timer(int bombTime) {
 		
@@ -156,7 +157,7 @@ public class display_timer implements MessageListenerInterface{
 				}
 				else
 				{
-					//Sensor was presec before the loop expired. => ball fell back on sensor
+					//Sensor was pressed before the loop expired. => ball fell back on sensor
 					if(m_defusableTimerRunning)
 					{
 						m_defusableTimer.stop();
@@ -175,6 +176,20 @@ public class display_timer implements MessageListenerInterface{
 			if(m_defusable)
 			{
 				generateSeq(); //Send the sequence
+				
+				while(!m_defused && m_gameTime > 0)
+				{
+				}
+				
+				if(m_defused)
+				{
+					//NO action at the moment.  all handle in defused()
+				}
+				else
+				{
+					//STATE: Times up before defusing the bomb. Explode
+					Explode();
+				}
 			}
 			else
 			{
@@ -187,18 +202,6 @@ public class display_timer implements MessageListenerInterface{
 			//STATE: Times up bfore placing the bomb. Explode
 			Explode();
 		}
-				// when bomb lays on the brick, sensor is on
-		 
-		 
-		 while (!m_defusableSensor.isPressed());
-		 
-		 Sound.beep();
-		 
-		 try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			LCD.drawString(e.getMessage(), 0, 0);
-		}	
 	}
 	
 	private void timeOut() {
@@ -332,6 +335,13 @@ public class display_timer implements MessageListenerInterface{
 	public void defused() {
 		Sound.beepSequenceUp();
 		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "defused"));
+		m_defused = true;
+		
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			LCD.drawString(e.getMessage(), 0, 0);
+		}
 	}
 	
 	private void planted() {
