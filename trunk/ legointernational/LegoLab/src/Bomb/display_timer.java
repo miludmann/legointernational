@@ -183,7 +183,7 @@ public class display_timer implements MessageListenerInterface{
 		{
 			Delay.msDelay(1);
 			
-			if(!m_defusableSensor.isPressed())
+			if(m_defusableSensor.isPressed())
 				return false;
 			else {
 				i++;
