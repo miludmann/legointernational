@@ -161,16 +161,16 @@ public class display_timer implements MessageListenerInterface{
 					if(m_defusableTimerRunning)
 					{
 						m_defusableTimer.stop();
-						m_defusableTimer.setDelay(CONST_DEFUSABLE_SENSOR_DEBOUNCING);
+						//m_defusableTimer.setDelay(CONST_DEFUSABLE_SENSOR_DEBOUNCING);
 						m_defusableTimerRunning = false;
 					}
 				}
 				
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e) {
-					LCD.drawString(e.getMessage(), 0, 0);
-				}
+//				try {
+//					Thread.sleep(10);
+//				} catch (InterruptedException e) {
+//					LCD.drawString(e.getMessage(), 0, 0);
+//				}
 			}
 			
 			if(m_defusable)
