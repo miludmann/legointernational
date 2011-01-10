@@ -31,24 +31,24 @@ public class display_timer implements MessageListenerInterface{
 	
 //	private Motor redLight = new Motor(MotorPort.C);
 //	private Motor greenLight = new Motor(MotorPort.B);	
-	private Motor claw_m = new Motor(MotorPort.A);
+	private Motor m_claw = new Motor(MotorPort.A);
 
 	protected MessageFramework m_messageFrameWork;
 	
-	protected static File danger;
+	protected static File m_danger;
 	
-	protected static int min = 1; // range for sequence to generate
-	protected static int max = 4; // plus min
+	protected static int m_min = 1; // range for sequence to generate
+	protected static int m_max = 4; // plus min
 	
-	protected String theSequence;
-	protected char theColor;
-	protected int pointer;
+	protected String m_theSequence;
+	protected char m_theColor;
+	protected int m_pointer;
 	
 	protected ArrayList<Image> m_images;
 	
 	protected Image m_colonn;
 	
-	int numberOfColors; // number of colors
+	protected int m_numberOfColors; // number of colors
 	
 	protected int m_startBombTime;
 	protected int m_remainingBombTime;
@@ -60,7 +60,7 @@ public class display_timer implements MessageListenerInterface{
 	protected boolean m_beepEnabled = false;
 	protected Graphics m_g;
 	
-	protected boolean planted = false;
+	protected boolean m_planted = false;
 	
 	protected TouchSensor m_theBomb;
 	
@@ -118,7 +118,7 @@ public class display_timer implements MessageListenerInterface{
 					LCD.drawString(e.getMessage(), 0, 0);
 				}
 			
-			if(planted){
+			if(m_planted){
 			
 			toExplosion();
 			break;
@@ -154,7 +154,7 @@ public class display_timer implements MessageListenerInterface{
 			
 			CalculateImageNumbers(i);
 			RefreshLCD();
-			m_g.drawString("seq.:"+theSequence, 1, 56, false);
+			m_g.drawString("seq.:"+m_theSequence, 1, 56, false);
 			if(m_beepEnabled)
 				Sound.beep();
 			
@@ -174,8 +174,8 @@ public class display_timer implements MessageListenerInterface{
 	private boolean checkSequence(char theColor2) {
 		
 		m_g.drawString("pressed SEQ: " + theColor2, 1, 40);
-		m_g.drawString("seq: " + theSequence.charAt(pointer), 1, 48);
-		if(theSequence.charAt(pointer)!=theColor2){
+		m_g.drawString("seq: " + m_theSequence.charAt(m_pointer), 1, 48);
+		if(m_theSequence.charAt(m_pointer)!=theColor2){
 			
 			Sound.buzz();
 			generateSeq();
@@ -183,8 +183,8 @@ public class display_timer implements MessageListenerInterface{
 		}
 			else {
 				
-				pointer ++;
-				if(pointer == numberOfColors){
+				m_pointer ++;
+				if(m_pointer == m_numberOfColors){
 					Sound.twoBeeps();
 					return true;
 				}
@@ -196,13 +196,13 @@ public class display_timer implements MessageListenerInterface{
 
 	private void generateSeq() {
 		
-		numberOfColors = (int) (Math.round((Math.random() * max)) + min);
+		m_numberOfColors = (int) (Math.round((Math.random() * m_max)) + m_min);
 		int ran;
 		
 		StringBuilder sb = new StringBuilder();
 		
 		
-		for (int i=1; i<=numberOfColors;i++){
+		for (int i=1; i<=m_numberOfColors;i++){
 		
 			ran = (int) (Math.round(Math.random() * 3))+1;
 			
@@ -225,13 +225,13 @@ public class display_timer implements MessageListenerInterface{
 			}					
 		}
 		
-		theSequence = sb.toString();
+		m_theSequence = sb.toString();
 		// for debugging
 		
-		m_g.drawString("Seqence: " + theSequence, 1, 56);
+		m_g.drawString("Seqence: " + m_theSequence, 1, 56);
 		
 		// Sending Random sequence to CT 
-		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "DS"+theSequence));	
+		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "DS"+m_theSequence));	
 	}
 
 	private void CalculateImageNumbers(int secondsPassed) {
@@ -278,8 +278,8 @@ public class display_timer implements MessageListenerInterface{
 	}
 	
 	private void planted() {
-		planted = true;
-		claw_m.rotate(60);
+		m_planted = true;
+		m_claw.rotate(60);
 	}
 	
 	
@@ -308,11 +308,11 @@ public class display_timer implements MessageListenerInterface{
 		else if(cmd.equals("SC")){ // color cable to cut
 			
 			char dc = msg.getPayload().charAt(2); // code sequence received from CT
-			theColor = dc;
+			m_theColor = dc;
 			
-			m_g.drawString("SCx: " + theColor, 1, 54);
+			m_g.drawString("SCx: " + m_theColor, 1, 54);
 				
-			if (checkSequence(theColor)){
+			if (checkSequence(m_theColor)){
 				defused();
 			}
 		}
