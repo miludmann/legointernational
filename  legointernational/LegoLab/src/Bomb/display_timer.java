@@ -1,13 +1,15 @@
 package Bomb;
 
-import java.io.File;
+
 import java.util.ArrayList;
 
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import lejos.nxt.*;
+import lejos.util.Delay;
 import lejos.util.Timer;
 import lejos.util.TimerListener;
+import Common.LITimer;
 import Networking.*;
 //import Units.BombTest.controlClaw;
 
@@ -17,7 +19,7 @@ import Networking.*;
 public class display_timer implements MessageListenerInterface{
 
 	protected static final int CONST_SEQUENCE_LENGTH = 10; // number of colors, sequence length
-	protected static final int CONST_DEFUSABLE_SENSOR_DEBOUNCING = 1000; 
+	protected static final int CONST_DEFUSABLE_SENSOR_DEBOUNCING = 2000; 
 	
 	// Bomb font didits saved in binary format
 	private static byte[] one = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xc0, (byte) 0xf0, (byte) 0xfc, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfc, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x0c, (byte) 0x0f, (byte) 0x1f, (byte) 0x1f, (byte) 0x3f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
@@ -40,7 +42,7 @@ public class display_timer implements MessageListenerInterface{
 	protected TouchSensor m_defusableSensor;
 	
 	protected Timer m_countdownTimer;
-	protected Timer m_defusableTimer;
+	protected LITimer m_defusableTimer;
 	protected boolean m_defusableTimerRunning;
 	
 	protected MessageFramework m_messageFrameWork;
@@ -77,7 +79,7 @@ public class display_timer implements MessageListenerInterface{
 			}
 		});
 		
-		m_defusableTimer = new Timer(CONST_DEFUSABLE_SENSOR_DEBOUNCING, new TimerListener() {
+		m_defusableTimer = new LITimer(CONST_DEFUSABLE_SENSOR_DEBOUNCING, new TimerListener() {
 		
 			@Override
 			public void timedOut() {
@@ -148,23 +150,10 @@ public class display_timer implements MessageListenerInterface{
 			while(!m_defusable && m_gameTime > 0)
 			{
 				if(!m_defusableSensor.isPressed()) //ball is off
-				{
-					if(!m_defusableTimerRunning)
-					{
-						m_defusableTimer.start();
-						m_defusableTimerRunning = true;
-					}
-				}
+					checkSensor(2000);
 				else
-				{
-					//Sensor was pressed before the loop expired. => ball fell back on sensor
-					if(m_defusableTimerRunning)
-					{
-						m_defusableTimer.stop();
-						//m_defusableTimer.setDelay(CONST_DEFUSABLE_SENSOR_DEBOUNCING);
-						m_defusableTimerRunning = false;
-					}
-				}
+					Delay.msDelay(10);
+				
 				
 //				try {
 //					Thread.sleep(10);
@@ -172,7 +161,7 @@ public class display_timer implements MessageListenerInterface{
 //					LCD.drawString(e.getMessage(), 0, 0);
 //				}
 			}
-			
+		
 			if(m_defusable)
 			{
 				generateSeq(); //Send the sequence
@@ -203,7 +192,29 @@ public class display_timer implements MessageListenerInterface{
 			Explode();
 		}
 	}
-	
+	private boolean checkSensor(int ms) {
+		int i=0;
+		while(i <= ms){
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				LCD.drawString(e.getMessage(), 0, 0);
+			}
+		
+		if(!m_defusableSensor.isPressed())
+			return false;
+		else{
+			i++;
+			if(i==ms)
+				m_defusable = true;
+			}
+		}
+		
+		return true;
+		
+	}
+
+
 	private void timeOut() {
 		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "TO"));
 		
