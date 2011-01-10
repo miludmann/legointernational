@@ -1,6 +1,5 @@
 package Bomb;
 
-
 import java.util.ArrayList;
 
 import javax.microedition.lcdui.Graphics;
@@ -10,10 +9,6 @@ import lejos.util.Delay;
 import lejos.util.Timer;
 import lejos.util.TimerListener;
 import Networking.*;
-//import Units.BombTest.controlClaw;
-
-
-
 
 public class display_timer implements MessageListenerInterface{
 
@@ -34,7 +29,6 @@ public class display_timer implements MessageListenerInterface{
 	private static byte[] colon = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x1e, (byte) 0x1e, (byte) 0x1e, (byte) 0x1e, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x3c, (byte) 0x3c, (byte) 0x3c, (byte) 0x3c, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
 	private static byte[] empty = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
 	
-	
 //	private Motor redLight = new Motor(MotorPort.C);
 //	private Motor greenLight = new Motor(MotorPort.B);	
 	protected Motor m_claw;
@@ -52,8 +46,6 @@ public class display_timer implements MessageListenerInterface{
 	protected Image m_colonn;
 	
 	protected int m_gameTime;
-	//protected int m_startBombTime;
-	//protected int m_remainingBombTime;
 
 	protected int m_minutes;
 	protected int m_seconds1;
@@ -66,7 +58,7 @@ public class display_timer implements MessageListenerInterface{
 	protected boolean m_defusable = false;	
 	protected boolean m_defused = false;	
 	
-	display_timer(int bombTime) {
+	display_timer() {
 		
 		m_g = new Graphics();
 		m_countdownTimer = new Timer(1000, new TimerListener() {
@@ -100,14 +92,8 @@ public class display_timer implements MessageListenerInterface{
 		m_colonn = new Image (4, 39, colon);
 		
 		m_gameTime = -1;
-		
-		//setBombTime(bombTime);
 	}
 	
-//	public void setBombTime(int seconds) {
-//		m_startBombTime = seconds;
-//		m_remainingBombTime = seconds;
-//	}
 	public void countDownTimer() {
 		CalculateImageNumbers(m_gameTime);
 		RefreshLCD();
@@ -140,7 +126,7 @@ public class display_timer implements MessageListenerInterface{
 			while(!m_defusable && m_gameTime > 0)
 			{
 				if(!m_defusableSensor.isPressed()) //ball is off
-					if(checkSensor(2000))
+					if(checkSensor(CONST_DEFUSABLE_SENSOR_DEBOUNCING))
 						m_defusable = true;
 				else
 					Delay.msDelay(10);
@@ -148,8 +134,8 @@ public class display_timer implements MessageListenerInterface{
 		
 			if(m_defusable)
 			{
-				generateSeq(); //Send the sequence
-				
+				//STATE: Waiting for defusing
+				generateSeq(); //Send the sequence				
 				while(!m_defused && m_gameTime > 0)
 				{
 				}
@@ -193,57 +179,27 @@ public class display_timer implements MessageListenerInterface{
 		return true;
 	}
 
-
-	private void timeOut() {
-		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "TO"));
-		
-	}
-
-//	private void toExplosion() {
-//		
-//		generateSeq();
-//		m_g.clear();
-//		
-//		while(m_gameTime >= 0) {
-//			
-//			CalculateImageNumbers(m_gameTime);
-//			RefreshLCD();
-//			
-//			m_g.drawString("seq.:"+m_currentSequence, 1, 56, false);
-//			if(m_beepEnabled)
-//				Sound.beep();
-//			
-//			if (m_gameTime == 0)
-//				Explode();
-//			
-//			try {
-//				Thread.sleep(1000); //Sleep for 1 second before next countdown.
-//			} catch (InterruptedException e) {
-//				LCD.drawString(e.getMessage(), 0, 0);
-//			}
-//		 }
-//	}
-
 	private boolean checkSequence(char theColor2) {
-		
 		m_g.drawString("pressed SEQ: " + theColor2, 1, 40);
 		m_g.drawString("seq: " + m_currentSequence.charAt(m_pointer), 1, 48);
-		if(m_currentSequence.charAt(m_pointer)!=theColor2){
-			
+		
+		if(m_currentSequence.charAt(m_pointer) != theColor2){
+			//Next Sqeuence tested was wrong.
 			Sound.buzz();
 			generateSeq();
 			return false;
 		}
-			else {
-				
-				m_pointer ++;
-				if(m_pointer == CONST_SEQUENCE_LENGTH){
-					Sound.twoBeeps();
-					return true;
-				}
-				
-			} 
-						
+		else
+		{
+			//Next Sequence tested was right
+			if(m_pointer == CONST_SEQUENCE_LENGTH-1){
+				Sound.twoBeeps();
+				return true;
+			}
+			
+			m_pointer++;
+		} 
+
 		return false;
 	}
 
@@ -278,6 +234,7 @@ public class display_timer implements MessageListenerInterface{
 		}
 		
 		m_currentSequence = sb.toString();
+		m_pointer = 0;
 		// for debugging
 		
 		m_g.drawString("Seqence: " + m_currentSequence, 1, 56);
@@ -316,22 +273,20 @@ public class display_timer implements MessageListenerInterface{
 	{
 		m_beepEnabled = enabled;
 	}
-// ############################################ MESSAGE FAILURE
+
 	protected void Explode() {
 		Sound.buzz();
-		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "BOOM"));		
+		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "BOOM"));
+		
+		Delay.msDelay(5000);
 	}
-// ############################################ MESSAGE SUCCESS 	
+
 	public void defused() {
 		Sound.beepSequenceUp();
 		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "defused"));
 		m_defused = true;
 		
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			LCD.drawString(e.getMessage(), 0, 0);
-		}
+		Delay.msDelay(5000);
 	}
 	
 	private void planted() {
@@ -339,9 +294,6 @@ public class display_timer implements MessageListenerInterface{
 		m_claw.rotate(60);
 	}
 	
-	
-	
-// ############################ RECEIVING MESSAGES HERE #########################
 	@Override
 	public void recievedNewMessage(LIMessage msg) {
 		
@@ -349,7 +301,6 @@ public class display_timer implements MessageListenerInterface{
 		m_g.drawString("message: " + cmd, 1, 48);
 		
 		if(cmd.equals("GT")){
-						
 			String gt = msg.getPayload().substring(2, 6);
 			Sound.beepSequenceUp();
 			m_gameTime = Integer.parseInt(gt);
@@ -363,14 +314,17 @@ public class display_timer implements MessageListenerInterface{
 		}
 		
 		else if(cmd.equals("SC")){ // color cable to cut
-			
-			char nextWireToCut = msg.getPayload().charAt(2); // code sequence received from CT
-			
-			m_g.drawString("SCx: " + nextWireToCut, 1, 54);
-				
-			if (checkSequence(nextWireToCut)){
-				defused();
-			}
+			try
+			{
+				char nextWireToCut = msg.getPayload().charAt(2); // code sequence received from CT
+				m_g.drawString("SCx: " + nextWireToCut, 1, 54);
+					
+				if (checkSequence(nextWireToCut)){
+					defused();
+				}
+			} catch (Exception x) {
+				LCD.drawString(x.getMessage(), 0, 0);
+			}	
 		}
 	}
 }
