@@ -292,21 +292,21 @@ public class display_timer implements MessageListenerInterface{
 		m_g.drawString("message: " + cmd, 1, 48);
 		
 		if(cmd.equals("GT")){
-			
-			
+						
 			String gt = msg.m_payload.substring(2, 6);
 			Sound.beepSequenceUp();
 			m_gameTime = Integer.parseInt(gt);
 			m_g.clear();
-			
 		}
 		
 		else if(cmd.equals("PL")){ //trigger to detach the bomb from the terrorist unit
+			
 			planted();
 			m_btc.SendMessage(new LIMessage(LIMessageType.Command, "Bomb deployed"));
 		}
 		
 		else if(cmd.equals("SC")){ // color cable to cut
+			
 			char dc = msg.m_payload.charAt(2); // code sequence received from CT
 			theColor = dc;
 			
