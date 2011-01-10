@@ -17,6 +17,7 @@ import Networking.*;
 public class display_timer implements MessageListenerInterface{
 
 	protected static final int CONST_SEQUENCE_LENGTH = 10; // number of colors, sequence length
+	protected static final int CONST_DEFUSABLE_SENSOR_DEBOUNCING = 800; 
 	
 	// Bomb font didits saved in binary format
 	private static byte[] one = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xc0, (byte) 0xf0, (byte) 0xfc, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfc, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x0c, (byte) 0x0f, (byte) 0x1f, (byte) 0x1f, (byte) 0x3f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
@@ -39,6 +40,8 @@ public class display_timer implements MessageListenerInterface{
 	protected TouchSensor m_defusableSensor;
 	
 	protected Timer m_countdownTimer;
+	protected Timer m_defusableTimer;
+	protected boolean m_defusableTimerRunning;
 	
 	protected MessageFramework m_messageFrameWork;
 	
@@ -60,6 +63,7 @@ public class display_timer implements MessageListenerInterface{
 	protected Graphics m_g;
 	
 	protected boolean m_planted = false;
+	protected boolean m_defusable = false;	
 	
 	display_timer(int bombTime) {
 		
@@ -69,6 +73,14 @@ public class display_timer implements MessageListenerInterface{
 			@Override
 			public void timedOut() {
 				countDownTimer();
+			}
+		});
+		
+		m_defusableTimer = new Timer(CONST_DEFUSABLE_SENSOR_DEBOUNCING, new TimerListener() {
+		
+			@Override
+			public void timedOut() {
+				m_defusable = true;
 			}
 		});
 		
@@ -129,25 +141,53 @@ public class display_timer implements MessageListenerInterface{
 		}
 		
 		
-		
-		//STATE: Waiting for defused;
-//		for (int j = 0; j <=m_gameTime; j++){	
-			//m_g.drawString("time left:"+(m_gameTime-j), 1, 20, false);
-//			 try {
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					LCD.drawString(e.getMessage(), 0, 0);
-//				}
+		if(m_planted)
+		{
+			//STATE: Waiting for defusable
+			while(!m_defusable && m_gameTime > 0)
+			{
+				if(!m_defusableSensor.isPressed()) //ball is off
+				{
+					if(!m_defusableTimerRunning)
+					{
+						m_defusableTimer.start();
+						m_defusableTimerRunning = true;
+					}
+				}
+				else
+				{
+					//Sensor was presec before the loop expired. => ball fell back on sensor
+					if(m_defusableTimerRunning)
+					{
+						m_defusableTimer.stop();
+						m_defusableTimer.setDelay(CONST_DEFUSABLE_SENSOR_DEBOUNCING);
+						m_defusableTimerRunning = false;
+					}
+				}
+				
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					LCD.drawString(e.getMessage(), 0, 0);
+				}
+			}
 			
-//			if(m_planted){
-				//toExplosion();
-//				break;
-//			}
-//			else if (j == m_gameTime)
-//				timeOut();
-//		}
-		
-		// when bomb lays on the brick, sensor is on
+			if(m_defusable)
+			{
+				generateSeq(); //Send the sequence
+			}
+			else
+			{
+				//STATE: Times up before making bomb defusable. Explode
+				Explode();
+			}
+		}
+		else
+		{
+			//STATE: Times up bfore placing the bomb. Explode
+			Explode();
+		}
+				// when bomb lays on the brick, sensor is on
 		 
 		 
 		 while (!m_defusableSensor.isPressed());
