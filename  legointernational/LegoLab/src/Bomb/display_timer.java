@@ -37,14 +37,18 @@ public class display_timer implements MessageListenerInterface{
 	
 	protected static File danger;
 	
-	protected static int min = 5;
-	protected static int max = 100;
+	protected static int min = 1; // range for sequence to generate
+	protected static int max = 4; // plus min
 	
 	protected String theSequence;
+	protected char theColor;
+	protected int pointer;
 	
 	protected ArrayList<Image> m_images;
-	protected ArrayList<String> m_colors; // ### array with random colors (cables to cut sequence)
+	
 	protected Image m_colonn;
+	
+	int numberOfColors; // number of colors
 	
 	protected int m_startBombTime;
 	protected int m_remainingBombTime;
@@ -73,7 +77,7 @@ public class display_timer implements MessageListenerInterface{
 		m_theBomb = new TouchSensor(SensorPort.S1);
 		
 		m_images = new ArrayList<Image>();
-		m_colors = new ArrayList<String>();
+		
 		m_images.add(new Image(29, 39, zero));
 		
 		m_images.add(new Image (29, 39, one));
@@ -101,13 +105,13 @@ public class display_timer implements MessageListenerInterface{
 	
 	public void startCountdown() {
 		
-		
-		
 		while (m_gameTime == 0) {
-			m_g.drawString("Waiting for game to start " + m_gameTime, 1, 20, true);
+			m_g.drawString("Waiting for game to start", 1, 20, false);
 	}	 
+		
+		m_g.clear();
 		for (int j = 0; j <=m_gameTime; j++){	
-			
+			m_g.drawString("time left:"+(m_gameTime-j), 1, 20, false);
 			 try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -123,11 +127,7 @@ public class display_timer implements MessageListenerInterface{
 				timeOut();
 		}
 		
-	 //}
-		
-		
-		
-		 // when bomb lays on the brick, sensor is on
+		// when bomb lays on the brick, sensor is on
 		 
 		 
 		 while (!m_theBomb.isPressed());
@@ -147,57 +147,90 @@ public class display_timer implements MessageListenerInterface{
 	}
 
 	private void toExplosion() {
-		int randomNumber = (int) ((Math.random() * max) + min);
 		
-		generateSeq(randomNumber);
-		
+		generateSeq();
+		m_g.clear();
 		for (int i = 0; i <= m_startBombTime ; i++) {
 			
 			CalculateImageNumbers(i);
 			RefreshLCD();
-			
+			m_g.drawString("seq.:"+theSequence, 1, 56, false);
 			if(m_beepEnabled)
 				Sound.beep();
-			 
+			
+			if (i==m_startBombTime)
+				Explode();
+			
 			try {
 				Thread.sleep(1000); //Sleep for 1 second before next countdown.
 			} catch (InterruptedException e) {
 				LCD.drawString(e.getMessage(), 0, 0);
 			}
 			
-			if (i==m_startBombTime)
-				Explode();
+			
 		 }
 	}
 
-	private void generateSeq(int nr_colors) {
+	private boolean checkSequence(char theColor2) {
+		
+		m_g.drawString("pressed SEQ: " + theColor2, 1, 40);
+		m_g.drawString("seq: " + theSequence.charAt(pointer), 1, 48);
+		if(theSequence.charAt(pointer)!=theColor2){
+			
+			Sound.buzz();
+			generateSeq();
+			return false;
+		}
+			else {
+				
+				pointer ++;
+				if(pointer == numberOfColors)
+					return true;
+					
+				
+			} 
+						
+		return false;
+	}
+
+	private void generateSeq() {
+		
+		numberOfColors = (int) (Math.round((Math.random() * max)) + min);
 		int ran;
 		
-		for (int i=1; i<=nr_colors;i++){
+		StringBuilder sb = new StringBuilder();
 		
-			ran = (int) (Math.random() * 40);
+		
+		for (int i=1; i<=numberOfColors;i++){
+		
+			ran = (int) (Math.round(Math.random() * 3))+1;
 			
 			switch (ran){
 			case 4:
-				m_colors.add("R");
-				break;
-			case 3:
-				m_colors.add("G");
-				break;
-			case 2:
-				m_colors.add("Y");
-				break;
-			case 1:
-				m_colors.add("B");
+				sb.append("r");
 				break;
 				
+			case 3:
+				sb.append("g");
+				break;
+				
+			case 2:
+				sb.append("y");
+				break;
+				
+			case 1:
+				sb.append("b");
+				break;			
 			}					
 		}
+		
+		theSequence = sb.toString();
 		// for debugging
-		m_g.drawString("Seqence: " + m_colors.toString(), 1, 40);
+		
+		m_g.drawString("Seqence: " + theSequence, 1, 56);
 		
 		// Sending Random sequence to CT 
-		m_btc.SendMessage(new LIMessage(LIMessageType.Command, m_colors.toString()));	
+		m_btc.SendMessage(new LIMessage(LIMessageType.Command, "DS"+theSequence));	
 	}
 
 	private void CalculateImageNumbers(int secondsPassed) {
@@ -212,8 +245,6 @@ public class display_timer implements MessageListenerInterface{
 	}
 
 	private void RefreshLCD() {
-		
-		 
 		
 		Image imgMin = m_images.get(m_minutes);
 		Image imgSec1 = m_images.get(m_seconds1);
@@ -234,45 +265,54 @@ public class display_timer implements MessageListenerInterface{
 	{
 		m_beepEnabled = enabled;
 	}
-
+// ############################################ MESSAGE FAILURE
 	protected void Explode() {
 		Sound.buzz();
-		m_btc.SendMessage(new LIMessage(LIMessageType.Command, "boom"));		
-		
+		m_btc.SendMessage(new LIMessage(LIMessageType.Command, "BOOM"));		
 	}
-	
+// ############################################ MESSAGE SUCCESS 	
 	public void defused() {
+		Sound.beepSequenceUp();
 		m_btc.SendMessage(new LIMessage(LIMessageType.Command, "defused"));
 	}
-
-	@Override
-	public void recievedNewMessage(LIMessage msg) {
-		
-		
-		// m_btc.SendMessage(new LIMessage(LIMessageType.Command, ""));
-		String cmd = msg.m_payload.substring(0, 2);
-		m_g.drawString("message: " + cmd, 1, 48);
-		if(cmd.equals("GT"))
-		{
-			String gt = msg.m_payload.substring(2, 6);
-			Sound.beepSequenceUp();
-			m_gameTime = Integer.parseInt(gt);
-			m_g.drawString("game time: " + m_gameTime, 1, 40);
-		}
-		else if(cmd.equals("PL")){ //trigger to detach the bomb from the terrorist unit
-			planted();
-			m_btc.SendMessage(new LIMessage(LIMessageType.Command, "Bomb deployed"));
-		}
-		else if(cmd.equals("DC")){ // color cable to cut
-			String dc = msg.m_payload.substring(2, 3); // code sequence received from CT
-			
-		}
-		
-	}
-
+	
 	private void planted() {
 		planted = true;
 		claw_m.rotate(60);
 	}
 	
+	
+	
+// ############################ RECEIVING MESSAGES HERE #########################
+	@Override
+	public void recievedNewMessage(LIMessage msg) {
+		
+		String cmd = msg.m_payload.substring(0, 2);
+		m_g.drawString("message: " + cmd, 1, 48);
+		
+		if(cmd.equals("GT")){
+			
+			
+			String gt = msg.m_payload.substring(2, 6);
+			Sound.beepSequenceUp();
+			m_gameTime = Integer.parseInt(gt);
+			m_g.clear();
+			
+		}
+		
+		else if(cmd.equals("PL")){ //trigger to detach the bomb from the terrorist unit
+			planted();
+			m_btc.SendMessage(new LIMessage(LIMessageType.Command, "Bomb deployed"));
+		}
+		
+		else if(cmd.equals("SC")){ // color cable to cut
+			String dc = msg.m_payload.substring(2, 3); // code sequence received from CT
+			theColor = dc.charAt(1);
+			
+			
+			if (checkSequence(theColor)){
+				defused();
+			}
+		}	
+	}
 }
