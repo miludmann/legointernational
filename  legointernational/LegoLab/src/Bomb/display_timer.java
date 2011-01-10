@@ -184,9 +184,10 @@ public class display_timer implements MessageListenerInterface{
 			else {
 				
 				pointer ++;
-				if(pointer == numberOfColors)
+				if(pointer == numberOfColors){
+					Sound.twoBeeps();
 					return true;
-					
+				}
 				
 			} 
 						
@@ -306,13 +307,14 @@ public class display_timer implements MessageListenerInterface{
 		}
 		
 		else if(cmd.equals("SC")){ // color cable to cut
-			String dc = msg.m_payload.substring(2, 3); // code sequence received from CT
-			theColor = dc.charAt(1);
+			char dc = msg.m_payload.charAt(2); // code sequence received from CT
+			theColor = dc;
 			
-			
+			m_g.drawString("SCx: " + theColor, 1, 54);
+				
 			if (checkSequence(theColor)){
 				defused();
 			}
-		}	
+		}
 	}
 }
