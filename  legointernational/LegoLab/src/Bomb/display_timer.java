@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import lejos.nxt.*;
+import lejos.util.Timer;
+import lejos.util.TimerListener;
 import Networking.*;
 //import Units.BombTest.controlClaw;
 
@@ -13,6 +15,8 @@ import Networking.*;
 
 
 public class display_timer implements MessageListenerInterface{
+
+	protected static final int CONST_SEQUENCE_LENGTH = 10; // number of colors, sequence length
 	
 	// Bomb font didits saved in binary format
 	private static byte[] one = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xc0, (byte) 0xf0, (byte) 0xfc, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfc, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x0c, (byte) 0x0f, (byte) 0x1f, (byte) 0x1f, (byte) 0x3f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
@@ -31,27 +35,22 @@ public class display_timer implements MessageListenerInterface{
 	
 //	private Motor redLight = new Motor(MotorPort.C);
 //	private Motor greenLight = new Motor(MotorPort.B);	
-	private Motor m_claw = new Motor(MotorPort.A);
-
+	protected Motor m_claw;
+	protected TouchSensor m_defusableSensor;
+	
+	protected Timer m_countdownTimer;
+	
 	protected MessageFramework m_messageFrameWork;
 	
-	protected static File m_danger;
-	
-	protected static int m_min = 1; // range for sequence to generate
-	protected static int m_max = 4; // plus min
-	
-	protected String m_theSequence;
-	protected char m_theColor;
+	protected String m_currentSequence;
 	protected int m_pointer;
 	
 	protected ArrayList<Image> m_images;
-	
 	protected Image m_colonn;
 	
-	protected int m_numberOfColors; // number of colors
-	
-	protected int m_startBombTime;
-	protected int m_remainingBombTime;
+	protected int m_gameTime;
+	//protected int m_startBombTime;
+	//protected int m_remainingBombTime;
 
 	protected int m_minutes;
 	protected int m_seconds1;
@@ -62,24 +61,26 @@ public class display_timer implements MessageListenerInterface{
 	
 	protected boolean m_planted = false;
 	
-	protected TouchSensor m_theBomb;
-	
-	protected int m_gameTime;
-	
 	display_timer(int bombTime) {
 		
 		m_g = new Graphics();
+		m_countdownTimer = new Timer(1000, new TimerListener() {
+		
+			@Override
+			public void timedOut() {
+				countDownTimer();
+			}
+		});
 		
 		m_messageFrameWork = MessageFramework.getInstance();
 		m_messageFrameWork.addMessageListener(this);
 		m_messageFrameWork.StartListen();
 		
-		m_theBomb = new TouchSensor(SensorPort.S1);
+		m_claw = new Motor(MotorPort.A);
+		m_defusableSensor = new TouchSensor(SensorPort.S1);
 		
 		m_images = new ArrayList<Image>();
-		
 		m_images.add(new Image(29, 39, zero));
-		
 		m_images.add(new Image (29, 39, one));
 		m_images.add(new Image (29, 39, two));
 		m_images.add(new Image (29, 39, three));
@@ -91,46 +92,65 @@ public class display_timer implements MessageListenerInterface{
 		m_images.add(new Image (29, 39, nine));
 		m_images.add(new Image (29, 39, empty));
 		
-		
-		
 		m_colonn = new Image (4, 39, colon);
 		
-		setBombTime(bombTime);
+		m_gameTime = -1;
+		
+		//setBombTime(bombTime);
 	}
 	
-	public void setBombTime(int seconds) {
-		m_startBombTime = seconds;
-		m_remainingBombTime = seconds;
+//	public void setBombTime(int seconds) {
+//		m_startBombTime = seconds;
+//		m_remainingBombTime = seconds;
+//	}
+	public void countDownTimer() {
+		CalculateImageNumbers(m_gameTime);
+		RefreshLCD();
+		
+		m_gameTime--;
+	}
+	
+	public void setNewTime(int seconds)
+	{
+		m_gameTime = seconds;
 	}
 	
 	public void startCountdown() {
 		
-		while (m_gameTime == 0) {
-			m_g.drawString("Waiting for game to start", 1, 20, false);
-	}	 
-		
+		//STATE: Waiting for game start
+		m_g.drawString("Waiting for game to start", 1, 20, false);
+		while (m_gameTime == -1) {
+		}	 
+
+		//STATE: Waiting for planted
 		m_g.clear();
-		for (int j = 0; j <=m_gameTime; j++){	
-			m_g.drawString("time left:"+(m_gameTime-j), 1, 20, false);
-			 try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					LCD.drawString(e.getMessage(), 0, 0);
-				}
-			
-			if(m_planted){
-			
-			toExplosion();
-			break;
-			}
-			else if (j == m_gameTime)
-				timeOut();
+		m_countdownTimer.start();
+		while(!m_planted && m_gameTime > 0){
 		}
+		
+		
+		
+		//STATE: Waiting for defused;
+//		for (int j = 0; j <=m_gameTime; j++){	
+			//m_g.drawString("time left:"+(m_gameTime-j), 1, 20, false);
+//			 try {
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					LCD.drawString(e.getMessage(), 0, 0);
+//				}
+			
+//			if(m_planted){
+				//toExplosion();
+//				break;
+//			}
+//			else if (j == m_gameTime)
+//				timeOut();
+//		}
 		
 		// when bomb lays on the brick, sensor is on
 		 
 		 
-		 while (!m_theBomb.isPressed());
+		 while (!m_defusableSensor.isPressed());
 		 
 		 Sound.beep();
 		 
@@ -146,36 +166,36 @@ public class display_timer implements MessageListenerInterface{
 		
 	}
 
-	private void toExplosion() {
-		
-		generateSeq();
-		m_g.clear();
-		for (int i = 0; i <= m_startBombTime ; i++) {
-			
-			CalculateImageNumbers(i);
-			RefreshLCD();
-			m_g.drawString("seq.:"+m_theSequence, 1, 56, false);
-			if(m_beepEnabled)
-				Sound.beep();
-			
-			if (i==m_startBombTime)
-				Explode();
-			
-			try {
-				Thread.sleep(1000); //Sleep for 1 second before next countdown.
-			} catch (InterruptedException e) {
-				LCD.drawString(e.getMessage(), 0, 0);
-			}
-			
-			
-		 }
-	}
+//	private void toExplosion() {
+//		
+//		generateSeq();
+//		m_g.clear();
+//		
+//		while(m_gameTime >= 0) {
+//			
+//			CalculateImageNumbers(m_gameTime);
+//			RefreshLCD();
+//			
+//			m_g.drawString("seq.:"+m_currentSequence, 1, 56, false);
+//			if(m_beepEnabled)
+//				Sound.beep();
+//			
+//			if (m_gameTime == 0)
+//				Explode();
+//			
+//			try {
+//				Thread.sleep(1000); //Sleep for 1 second before next countdown.
+//			} catch (InterruptedException e) {
+//				LCD.drawString(e.getMessage(), 0, 0);
+//			}
+//		 }
+//	}
 
 	private boolean checkSequence(char theColor2) {
 		
 		m_g.drawString("pressed SEQ: " + theColor2, 1, 40);
-		m_g.drawString("seq: " + m_theSequence.charAt(m_pointer), 1, 48);
-		if(m_theSequence.charAt(m_pointer)!=theColor2){
+		m_g.drawString("seq: " + m_currentSequence.charAt(m_pointer), 1, 48);
+		if(m_currentSequence.charAt(m_pointer)!=theColor2){
 			
 			Sound.buzz();
 			generateSeq();
@@ -184,7 +204,7 @@ public class display_timer implements MessageListenerInterface{
 			else {
 				
 				m_pointer ++;
-				if(m_pointer == m_numberOfColors){
+				if(m_pointer == CONST_SEQUENCE_LENGTH){
 					Sound.twoBeeps();
 					return true;
 				}
@@ -196,13 +216,12 @@ public class display_timer implements MessageListenerInterface{
 
 	private void generateSeq() {
 		
-		m_numberOfColors = (int) (Math.round((Math.random() * m_max)) + m_min);
 		int ran;
 		
 		StringBuilder sb = new StringBuilder();
 		
 		
-		for (int i=1; i<=m_numberOfColors;i++){
+		for (int i=1; i<=CONST_SEQUENCE_LENGTH;i++){
 		
 			ran = (int) (Math.round(Math.random() * 3))+1;
 			
@@ -225,22 +244,20 @@ public class display_timer implements MessageListenerInterface{
 			}					
 		}
 		
-		m_theSequence = sb.toString();
+		m_currentSequence = sb.toString();
 		// for debugging
 		
-		m_g.drawString("Seqence: " + m_theSequence, 1, 56);
+		m_g.drawString("Seqence: " + m_currentSequence, 1, 56);
 		
 		// Sending Random sequence to CT 
-		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "DS"+m_theSequence));	
+		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "DS"+m_currentSequence));	
 	}
 
-	private void CalculateImageNumbers(int secondsPassed) {
+	private void CalculateImageNumbers(int remainingGameTime) {
 
-		int remainingSeconds;
-		m_remainingBombTime = m_startBombTime - secondsPassed;
-		remainingSeconds = m_remainingBombTime % 60;
+		int remainingSeconds = remainingGameTime % 60;
 		
-		m_minutes = (m_remainingBombTime - remainingSeconds) / 60;
+		m_minutes = (remainingGameTime - remainingSeconds) / 60;
 		m_seconds1 = (int)Math.floor((remainingSeconds / 10)); //Calculating the 1st digit of the seconds 27s /10 = 2,7 Floor = 2
 		m_seconds2 = (int)Math.round( (  ((double)remainingSeconds / 10d) - (double)m_seconds1) * 10d); //Calculating 2nd digit, 27/10 - 2 (seconds1) = 0,7 x 10 = 7
 	}
@@ -258,7 +275,7 @@ public class display_timer implements MessageListenerInterface{
 		m_g.drawImage(imgSec2, 70, 0, false);
 		
 		//debugging
-		m_g.drawString("Remaining: " + m_remainingBombTime, 1, 40);
+		m_g.drawString("Remaining: " + m_gameTime, 1, 40);
 		//m_g.drawString("Start: " + m_startBombTime, 1, 48);
 	}
 	
@@ -307,12 +324,11 @@ public class display_timer implements MessageListenerInterface{
 		
 		else if(cmd.equals("SC")){ // color cable to cut
 			
-			char dc = msg.getPayload().charAt(2); // code sequence received from CT
-			m_theColor = dc;
+			char nextWireToCut = msg.getPayload().charAt(2); // code sequence received from CT
 			
-			m_g.drawString("SCx: " + m_theColor, 1, 54);
+			m_g.drawString("SCx: " + nextWireToCut, 1, 54);
 				
-			if (checkSequence(m_theColor)){
+			if (checkSequence(nextWireToCut)){
 				defused();
 			}
 		}
