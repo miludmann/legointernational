@@ -9,7 +9,6 @@ import lejos.nxt.*;
 import lejos.util.Delay;
 import lejos.util.Timer;
 import lejos.util.TimerListener;
-import Common.LITimer;
 import Networking.*;
 //import Units.BombTest.controlClaw;
 
@@ -42,7 +41,6 @@ public class display_timer implements MessageListenerInterface{
 	protected TouchSensor m_defusableSensor;
 	
 	protected Timer m_countdownTimer;
-	protected LITimer m_defusableTimer;
 	protected boolean m_defusableTimerRunning;
 	
 	protected MessageFramework m_messageFrameWork;
@@ -76,14 +74,6 @@ public class display_timer implements MessageListenerInterface{
 			@Override
 			public void timedOut() {
 				countDownTimer();
-			}
-		});
-		
-		m_defusableTimer = new LITimer(CONST_DEFUSABLE_SENSOR_DEBOUNCING, new TimerListener() {
-		
-			@Override
-			public void timedOut() {
-				m_defusable = true;
 			}
 		});
 		
@@ -150,16 +140,10 @@ public class display_timer implements MessageListenerInterface{
 			while(!m_defusable && m_gameTime > 0)
 			{
 				if(!m_defusableSensor.isPressed()) //ball is off
-					checkSensor(2000);
+					if(checkSensor(2000))
+						m_defusable = true;
 				else
 					Delay.msDelay(10);
-				
-				
-//				try {
-//					Thread.sleep(10);
-//				} catch (InterruptedException e) {
-//					LCD.drawString(e.getMessage(), 0, 0);
-//				}
 			}
 		
 			if(m_defusable)
@@ -192,26 +176,21 @@ public class display_timer implements MessageListenerInterface{
 			Explode();
 		}
 	}
-	private boolean checkSensor(int ms) {
+	
+	private boolean checkSensor(int delayMs) {
 		int i=0;
-		while(i <= ms){
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				LCD.drawString(e.getMessage(), 0, 0);
-			}
-		
-		if(!m_defusableSensor.isPressed())
-			return false;
-		else{
-			i++;
-			if(i==ms)
-				m_defusable = true;
+		while(i <= delayMs)
+		{
+			Delay.msDelay(1);
+			
+			if(!m_defusableSensor.isPressed())
+				return false;
+			else {
+				i++;
 			}
 		}
 		
 		return true;
-		
 	}
 
 
