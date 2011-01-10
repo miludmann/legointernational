@@ -33,7 +33,7 @@ public class display_timer implements MessageListenerInterface{
 //	private Motor greenLight = new Motor(MotorPort.B);	
 	private Motor claw_m = new Motor(MotorPort.A);
 
-	protected BluetoothCommander m_btc;
+	protected MessageFramework m_messageFrameWork;
 	
 	protected static File danger;
 	
@@ -70,9 +70,9 @@ public class display_timer implements MessageListenerInterface{
 		
 		m_g = new Graphics();
 		
-		m_btc = new BluetoothCommander();
-		m_btc.addMessageListener(this);
-		m_btc.StartListen();
+		m_messageFrameWork = MessageFramework.getInstance();
+		m_messageFrameWork.addMessageListener(this);
+		m_messageFrameWork.StartListen();
 		
 		m_theBomb = new TouchSensor(SensorPort.S1);
 		
@@ -142,7 +142,7 @@ public class display_timer implements MessageListenerInterface{
 	}
 	
 	private void timeOut() {
-		m_btc.SendMessage(new LIMessage(LIMessageType.Command, "TO"));
+		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "TO"));
 		
 	}
 
@@ -231,7 +231,7 @@ public class display_timer implements MessageListenerInterface{
 		m_g.drawString("Seqence: " + theSequence, 1, 56);
 		
 		// Sending Random sequence to CT 
-		m_btc.SendMessage(new LIMessage(LIMessageType.Command, "DS"+theSequence));	
+		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "DS"+theSequence));	
 	}
 
 	private void CalculateImageNumbers(int secondsPassed) {
@@ -269,12 +269,12 @@ public class display_timer implements MessageListenerInterface{
 // ############################################ MESSAGE FAILURE
 	protected void Explode() {
 		Sound.buzz();
-		m_btc.SendMessage(new LIMessage(LIMessageType.Command, "BOOM"));		
+		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "BOOM"));		
 	}
 // ############################################ MESSAGE SUCCESS 	
 	public void defused() {
 		Sound.beepSequenceUp();
-		m_btc.SendMessage(new LIMessage(LIMessageType.Command, "defused"));
+		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "defused"));
 	}
 	
 	private void planted() {
@@ -288,12 +288,12 @@ public class display_timer implements MessageListenerInterface{
 	@Override
 	public void recievedNewMessage(LIMessage msg) {
 		
-		String cmd = msg.m_payload.substring(0, 2);
+		String cmd = msg.getPayload().substring(0, 2);
 		m_g.drawString("message: " + cmd, 1, 48);
 		
 		if(cmd.equals("GT")){
 						
-			String gt = msg.m_payload.substring(2, 6);
+			String gt = msg.getPayload().substring(2, 6);
 			Sound.beepSequenceUp();
 			m_gameTime = Integer.parseInt(gt);
 			m_g.clear();
@@ -302,12 +302,12 @@ public class display_timer implements MessageListenerInterface{
 		else if(cmd.equals("PL")){ //trigger to detach the bomb from the terrorist unit
 			
 			planted();
-			m_btc.SendMessage(new LIMessage(LIMessageType.Command, "Bomb deployed"));
+			m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "Bomb deployed"));
 		}
 		
 		else if(cmd.equals("SC")){ // color cable to cut
 			
-			char dc = msg.m_payload.charAt(2); // code sequence received from CT
+			char dc = msg.getPayload().charAt(2); // code sequence received from CT
 			theColor = dc;
 			
 			m_g.drawString("SCx: " + theColor, 1, 54);
