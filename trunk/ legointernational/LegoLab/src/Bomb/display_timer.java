@@ -180,25 +180,30 @@ public class display_timer implements MessageListenerInterface{
 	}
 
 	private boolean checkSequence(char theColor2) {
-		m_g.drawString("pressed SEQ: " + theColor2, 1, 40);
-		m_g.drawString("seq: " + m_currentSequence.charAt(m_pointer), 1, 48);
-		
-		if(m_currentSequence.charAt(m_pointer) != theColor2){
-			//Next Sqeuence tested was wrong.
-			Sound.buzz();
-			generateSeq();
-			return false;
-		}
-		else
+		try
 		{
-			//Next Sequence tested was right
-			if(m_pointer == CONST_SEQUENCE_LENGTH-1){
-				Sound.twoBeeps();
-				return true;
-			}
+			m_g.drawString("pressed SEQ: " + theColor2, 1, 40);
+			m_g.drawString("seq: " + m_currentSequence.charAt(m_pointer), 1, 48);
 			
-			m_pointer++;
-		} 
+			if(m_currentSequence.charAt(m_pointer) != theColor2){
+				//Next Sqeuence tested was wrong.
+				Sound.buzz();
+				generateSeq();
+				return false;
+			}
+			else
+			{
+				//Next Sequence tested was right
+				if(m_pointer == CONST_SEQUENCE_LENGTH-1){
+					Sound.twoBeeps();
+					return true;
+				}
+				
+				m_pointer++;
+			}
+		} catch (Exception x) {
+			LCD.drawString(x.getMessage(), 0, 0);
+		}
 
 		return false;
 	}
@@ -319,8 +324,11 @@ public class display_timer implements MessageListenerInterface{
 				char nextWireToCut = msg.getPayload().charAt(2); // code sequence received from CT
 				m_g.drawString("SCx: " + nextWireToCut, 1, 54);
 					
-				if (checkSequence(nextWireToCut)){
-					defused();
+				if(m_defusable)
+				{
+					if (checkSequence(nextWireToCut)){
+						defused();
+					}
 				}
 			} catch (Exception x) {
 				LCD.drawString(x.getMessage(), 0, 0);
