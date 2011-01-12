@@ -1,6 +1,6 @@
 package Bomb;
 
-import lejos.nxt.Button;
+//import lejos.nxt.Button;
 
 public class BombTester {
 	public static void main(String [] options) throws Exception{

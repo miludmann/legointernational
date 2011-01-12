@@ -1,19 +1,34 @@
 package Bomb;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
-import lejos.nxt.*;
+
+import lejos.nxt.LCD;
+import lejos.nxt.Motor;
+import lejos.nxt.MotorPort;
+import lejos.nxt.SensorPort;
+import lejos.nxt.Sound;
+import lejos.nxt.TouchSensor;
 import lejos.util.Delay;
 import lejos.util.Timer;
 import lejos.util.TimerListener;
-import Networking.*;
+import Networking.LIMessage;
+import Networking.LIMessageType;
+import Networking.MessageFramework;
+import Networking.MessageListenerInterface;
 
 public class display_timer implements MessageListenerInterface{
 
 	protected static final int CONST_SEQUENCE_LENGTH = 10; // number of colors, sequence length
-	protected static final int CONST_DEFUSABLE_SENSOR_DEBOUNCING = 2000; 
+	protected static final int CONST_DEFUSABLE_SENSOR_DEBOUNCING = 2000;
+	
+	protected static final int CONST_HALF_TIME_EXP_CHANCE = 0;
+	protected static final int CONST_3OF4_TIME_EXP_CHANCE = 2;
+	protected static final int CONST_7OF8_TIME_EXP_CHANCE = 5;
+	protected static final int CONST_8OF8_TIME_EXP_CHANCE = 15;
 	
 	// Bomb font didits saved in binary format
 	private static byte[] one = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xc0, (byte) 0xf0, (byte) 0xfc, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfc, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x0c, (byte) 0x0f, (byte) 0x1f, (byte) 0x1f, (byte) 0x3f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x3f, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
@@ -34,6 +49,8 @@ public class display_timer implements MessageListenerInterface{
 	protected Motor m_claw;
 	protected TouchSensor m_defusableSensor;
 	
+	protected File m_wavFile;
+	
 	protected Timer m_countdownTimer;
 	protected boolean m_defusableTimerRunning=false;
 	
@@ -46,8 +63,9 @@ public class display_timer implements MessageListenerInterface{
 	protected Image m_colonn;
 	
 	protected int m_gameTime= -1;
-	protected int m_penalty = 10;
+	protected int m_penalty = 8;
 	protected boolean m_setpenalty = false;
+	protected int m_staticGameTime;
 
 	protected int m_minutes;
 	protected int m_seconds1;
@@ -74,6 +92,8 @@ public class display_timer implements MessageListenerInterface{
 		m_messageFrameWork = MessageFramework.getInstance();
 		m_messageFrameWork.addMessageListener(this);
 		m_messageFrameWork.StartListen();
+		
+		m_wavFile = new File("Explosion2.wav");
 		
 		m_claw = new Motor(MotorPort.A);
 		m_defusableSensor = new TouchSensor(SensorPort.S1);
@@ -105,11 +125,51 @@ public class display_timer implements MessageListenerInterface{
 		CalculateImageNumbers(m_gameTime);
 		RefreshLCD();
 		
+		if(chance_of_explosion())
+			explode();
+		else
 		m_gameTime--;
 		
 		
 	}
 	
+/*
+ * Calculating the chance of explosion 
+ * 	
+ */
+	
+	private boolean chance_of_explosion() {
+		// example game time 120 sec
+		
+		int chanceFirstHalfTime = Math.round(m_staticGameTime/2); // 60 sec
+		int chance3of4Time = Math.round(chanceFirstHalfTime/2);// 30 sec
+		int chance7of8Time = Math.round(chanceFirstHalfTime/4);// 15 sec
+		int theChance = (int) (Math.random()*100)+1;
+		
+		if(m_gameTime > chanceFirstHalfTime){
+			
+			if(theChance <= CONST_HALF_TIME_EXP_CHANCE)
+				return true;
+			
+		}else if(m_gameTime <= chanceFirstHalfTime && m_gameTime > chance3of4Time){
+			
+			if(theChance <= CONST_3OF4_TIME_EXP_CHANCE)
+				return true;
+			
+		}else if(m_gameTime <= chance3of4Time && m_gameTime > chance7of8Time){
+			
+			if(theChance <= CONST_7OF8_TIME_EXP_CHANCE)
+				return true;
+			
+		}else if(m_gameTime <= chance7of8Time){
+			
+			if(theChance <= CONST_8OF8_TIME_EXP_CHANCE)
+				return true;
+		}
+			
+		return false;
+	}
+
 	public void setNewTime(int seconds)
 	{
 		m_gameTime = seconds;
@@ -136,8 +196,10 @@ public class display_timer implements MessageListenerInterface{
 			while(!m_defusable && m_gameTime > 0)
 			{
 				if(!m_defusableSensor.isPressed()) //ball is off
-					if(checkSensor(CONST_DEFUSABLE_SENSOR_DEBOUNCING))
+					if(checkSensor(CONST_DEFUSABLE_SENSOR_DEBOUNCING)){
 						m_defusable = true;
+						m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "defusable"));
+					}
 				else
 					Delay.msDelay(10);
 			}
@@ -158,19 +220,19 @@ public class display_timer implements MessageListenerInterface{
 				else
 				{
 					//STATE: Times up before defusing the bomb. Explode
-					Explode();
+					explode();
 				}
 			}
 			else
 			{
 				//STATE: Times up before making bomb defusable. Explode
-				Explode();
+				explode();
 			}
 		}
 		else
 		{
 			//STATE: Times up bfore placing the bomb. Explode
-			Explode();
+			explode();
 		}
 	}
 	
@@ -205,7 +267,8 @@ public class display_timer implements MessageListenerInterface{
 				
 				
 					if(m_gameTime>m_penalty){
-						m_gameTime-=m_penalty;
+						
+						m_gameTime-=(int) (Math.round(Math.random() * m_penalty))+5;
 						
 						m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "GT "+m_gameTime));
 						generateSeq();
@@ -307,10 +370,12 @@ public class display_timer implements MessageListenerInterface{
 		m_beepEnabled = enabled;
 	}
 
-	protected void Explode() {
-		Sound.buzz();
+	protected void explode() {
+		//Sound.buzz();
 		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "BOOM"));
+		Sound.playSample(m_wavFile, 100);
 		
+		m_gameTime = 0;
 		//Delay.msDelay(5000);
 	}
 
@@ -336,6 +401,7 @@ public class display_timer implements MessageListenerInterface{
 			Sound.beepSequenceUp();
 			m_gameTime = Integer.parseInt(gt);
 			m_g.clear();
+			m_staticGameTime = m_gameTime;
 		}
 		
 		else if(cmd.equals("CL"))
