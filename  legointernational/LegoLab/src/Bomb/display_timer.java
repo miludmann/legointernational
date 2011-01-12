@@ -29,23 +29,25 @@ public class display_timer implements MessageListenerInterface{
 	private static byte[] colon = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x1e, (byte) 0x1e, (byte) 0x1e, (byte) 0x1e, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x3c, (byte) 0x3c, (byte) 0x3c, (byte) 0x3c, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
 	private static byte[] empty = new byte[] {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, };
 	
-//	private Motor redLight = new Motor(MotorPort.C);
-//	private Motor greenLight = new Motor(MotorPort.B);	
+	private Motor m_redLight;
+	private Motor m_greenLight;	
 	protected Motor m_claw;
 	protected TouchSensor m_defusableSensor;
 	
 	protected Timer m_countdownTimer;
-	protected boolean m_defusableTimerRunning;
+	protected boolean m_defusableTimerRunning=false;
 	
 	protected MessageFramework m_messageFrameWork;
 	
-	protected String m_currentSequence;
-	protected int m_pointer;
+	protected String m_currentSequence="";
+	protected int m_pointer=0;
 	
 	protected ArrayList<Image> m_images;
 	protected Image m_colonn;
 	
-	protected int m_gameTime;
+	protected int m_gameTime= -1;
+	protected int m_penalty = 10;
+	protected boolean m_setpenalty = false;
 
 	protected int m_minutes;
 	protected int m_seconds1;
@@ -91,7 +93,12 @@ public class display_timer implements MessageListenerInterface{
 		
 		m_colonn = new Image (4, 39, colon);
 		
-		m_gameTime = -1;
+		m_redLight = new Motor(MotorPort.C);
+		m_greenLight = new Motor(MotorPort.B);
+//		m_gameTime = -1;
+//		m_planted = false;
+//		m_defusable = false;	
+//		m_defused = false;
 	}
 	
 	public void countDownTimer() {
@@ -99,6 +106,8 @@ public class display_timer implements MessageListenerInterface{
 		RefreshLCD();
 		
 		m_gameTime--;
+		
+		
 	}
 	
 	public void setNewTime(int seconds)
@@ -108,6 +117,7 @@ public class display_timer implements MessageListenerInterface{
 	
 	public void startCountdown() {
 		
+		m_claw.lock(100);
 		//STATE: Waiting for game start
 		m_g.drawString("Waiting for game to start", 1, 20, false);
 		while (m_gameTime == -1) {
@@ -142,6 +152,7 @@ public class display_timer implements MessageListenerInterface{
 				
 				if(m_defused)
 				{
+					m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "defused"));
 					//NO action at the moment.  all handle in defused()
 				}
 				else
@@ -188,12 +199,29 @@ public class display_timer implements MessageListenerInterface{
 			if(m_currentSequence.charAt(m_pointer) != theColor2){
 				//Next Sqeuence tested was wrong.
 				Sound.buzz();
-				generateSeq();
+				m_redLight.forward();
+				Delay.msDelay(300);
+				m_redLight.stop();
+				
+				
+					if(m_gameTime>m_penalty){
+						m_gameTime-=m_penalty;
+						
+						m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "GT "+m_gameTime));
+						generateSeq();
+					}
+					else
+					m_gameTime = 0;	
+					
 				return false;
 			}
 			else
 			{
 				//Next Sequence tested was right
+				m_greenLight.forward();
+				Delay.msDelay(300);
+				m_greenLight.stop();
+			
 				if(m_pointer == CONST_SEQUENCE_LENGTH-1){
 					Sound.twoBeeps();
 					return true;
@@ -245,7 +273,7 @@ public class display_timer implements MessageListenerInterface{
 		m_g.drawString("Seqence: " + m_currentSequence, 1, 56);
 		
 		// Sending Random sequence to CT 
-		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "DS"+m_currentSequence));	
+		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "DS "+m_currentSequence));	
 	}
 
 	private void CalculateImageNumbers(int remainingGameTime) {
@@ -283,16 +311,14 @@ public class display_timer implements MessageListenerInterface{
 		Sound.buzz();
 		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "BOOM"));
 		
-		Delay.msDelay(5000);
+		//Delay.msDelay(5000);
 	}
 
-	public void defused() {
-		Sound.beepSequenceUp();
-		m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "defused"));
-		m_defused = true;
-		
-		Delay.msDelay(5000);
-	}
+//	public void defused() {
+//		
+//		
+//		Delay.msDelay(5000);
+//	}
 	
 	private void planted() {
 		m_planted = true;
@@ -312,6 +338,9 @@ public class display_timer implements MessageListenerInterface{
 			m_g.clear();
 		}
 		
+		else if(cmd.equals("CL"))
+			closeClaws();
+		
 		else if(cmd.equals("PL")){ //trigger to detach the bomb from the terrorist unit
 			
 			planted();
@@ -327,12 +356,23 @@ public class display_timer implements MessageListenerInterface{
 				if(m_defusable)
 				{
 					if (checkSequence(nextWireToCut)){
-						defused();
+						m_messageFrameWork.SendMessage(new LIMessage(LIMessageType.Command, "defused"));
+						Sound.beepSequenceUp();
+						
+						
+						m_defused = true;
+						
+						//defused();
 					}
 				}
 			} catch (Exception x) {
 				LCD.drawString(x.getMessage(), 0, 0);
 			}	
 		}
+	}
+
+	private void closeClaws() {
+		m_claw.rotate(-60);
+		
 	}
 }
