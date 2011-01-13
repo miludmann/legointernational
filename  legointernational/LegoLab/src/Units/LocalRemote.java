@@ -32,7 +32,7 @@ public class LocalRemote {
     irRadar.start();
     compass.start();
 
-    while(!Button.ESCAPE.isPressed()) {} 
+    while(!Button.ESCAPE.isPressed() && remote.isAlive()) {} 
     radar.stop();
     irRadar.stop();
     compass.stop();
@@ -41,6 +41,79 @@ public class LocalRemote {
     while(!radar.isDoneRunning()) {}
     System.exit(1);
   } 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
   public static void main(String[] args) { 
 	  new LocalRemote().run();

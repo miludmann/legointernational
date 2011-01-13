@@ -26,7 +26,7 @@ public class Compass extends Thread{
 		mfw = MessageFramework.getInstance();
 		
 		while(isCompassAlive){
-			direction = compass.getDegreesCartesian();
+			direction = 360-compass.getDegrees();
 //			for(int i = 0; i<values.length; i++)
 //			{
 //				if(values[i] != valuesOld[i])

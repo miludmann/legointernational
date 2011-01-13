@@ -1,5 +1,7 @@
 package Units;
 
+import java.io.File;
+
 import lejos.nxt.Button;
 import lejos.nxt.ButtonListener;
 import lejos.nxt.LCD;
@@ -94,12 +96,14 @@ public class BombTest {
 		protected volatile boolean watchBallAlive;
 
 		public void run(){
+			File f = new File("explosin.wav");
 			watchBallAlive = true;
 			while(watchBallAlive){
 				while(touch.isPressed()){}
 				LCD.clearDisplay();
 				LCD.drawString("KABOOM !", 0, 1);
-				Sound.buzz();
+//				Sound.buzz();
+				Sound.playSample(f, 100);
 				while(!touch.isPressed()){}
 				LCD.clearDisplay();
 				LCD.drawString("Ball secured", 0, 1);

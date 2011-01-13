@@ -23,7 +23,7 @@ public class Radar extends Thread {
 		isDoneRunning = false;
 		radarAlive = true;
 		radar_m.regulateSpeed(true);
-		radar_m.setSpeed(300);
+		radar_m.setSpeed(150);
 	    ListenUS listenUS = new ListenUS(); 
 	    listenUS.start();
 

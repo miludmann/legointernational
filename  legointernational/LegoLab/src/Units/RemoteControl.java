@@ -1,8 +1,10 @@
 package Units;
 
+import java.io.File;
+
 import lejos.nxt.LCD;
 import lejos.nxt.Motor;
-import lejos.robotics.navigation.Pilot;
+import lejos.nxt.Sound;
 import lejos.robotics.navigation.TachoPilot;
 import Networking.LIMessage;
 import Networking.MessageFramework;
@@ -15,6 +17,7 @@ class RemoteControl extends Thread implements MessageListenerInterface {
 	private int speed;
   	private final static int DIFF_SPEED = 30;
   	protected volatile boolean remoteCtrlAlive;
+  	private static File plantSound = new File("planted.wav");
   
   	TachoPilot pilot;
 	  
@@ -37,6 +40,10 @@ class RemoteControl extends Thread implements MessageListenerInterface {
 		remoteCtrlAlive = false;
 	}
 
+//	public boolean isAlive(){
+//		return remoteCtrlAlive;
+//	}
+	
   	@Override
   	public void recievedNewMessage(LIMessage msg) {		
   		LCD.drawString("Command: "+msg.getPayload(), 0, 5);
@@ -112,6 +119,19 @@ class RemoteControl extends Thread implements MessageListenerInterface {
 		  LCD.clearDisplay();
   		  LCD.drawString("DECREASE SPEED", 0, 6);
 		}
+  		else if(msg.getPayload().equals("stopPrg"))
+  		{
+  		  pilot.stop();
+		  LCD.clearDisplay();
+  		  LCD.drawString("PROGRAM STOPPED", 0, 6);
+  		  stop();
+  		}
+  		else if(msg.getPayload().equals("planted"))
+  		{
+  		  Sound.playSample(plantSound, 100);
+		  LCD.clearDisplay();
+  		  LCD.drawString("Bomb planted", 0, 6);
+  		}
   		else {
   			LCD.drawString("No match", 0, 6);
   		}
